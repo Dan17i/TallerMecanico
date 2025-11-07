@@ -4,12 +4,12 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
-group = 'co.edu.uniquindio.co'
+group = 'co.edu.uniquindio.tallermecanico'
 version = '0.0.1-SNAPSHOT'
 description = 'proyecto final taller mecánico '
 
 java {
-	toolchain {
+	toolchain {	 
 		languageVersion = JavaLanguageVersion.of(21)
 	}
 }

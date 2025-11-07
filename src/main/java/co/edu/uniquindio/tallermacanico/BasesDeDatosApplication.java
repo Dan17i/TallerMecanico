@@ -1,4 +1,4 @@
-package co.edu.uniquindio.co.demo;
+package co.edu.uniquindio.tallermacanico;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
