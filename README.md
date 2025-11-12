@@ -27,7 +27,24 @@ El sistema de gestión busca organizar la información relacionada con clientes,
   - Repuestos utilizados  
   - Impuestos  
   - Valor total a pagar  
-  - Estado de pago (pendiente, pagada)  
+  - Estado de pago (pendiente, pagada)
+ 
+    # 📌 Enunciado: Sistema de Gestión de Taller Automotriz
+
+  El Taller “MotorPlus” es una empresa dedicada al mantenimiento y reparación de vehículos particulares y de empresa. Los clientes que llegan al taller deben registrarse para poder asociar la información de sus vehículos y el historial de servicios que reciben.  
+
+  Cada cliente puede llevar uno o varios vehículos, los cuales se identifican por su placa y poseen características propias como marca, modelo, año y tipo de servicio requerido.  
+  
+  Cuando un vehículo ingresa al taller, se genera una orden de trabajo que contiene la información de la fecha de ingreso, el diagnóstico inicial y los servicios que deberán realizarse. Una orden puede involucrar varios servicios y a su vez cada servicio puede ser realizado en diferentes vehículos.  
+  
+  Los mecánicos del taller trabajan en diferentes órdenes de trabajo y están especializados en distintas áreas (mecánica general, electricidad, latonería, pintura, etc.). En una misma orden pueden intervenir varios mecánicos, cada uno con un rol específico. Además, los mecánicos con mayor experiencia suelen supervisar a otros mecánicos en el desarrollo de las órdenes de trabajo, dejando registro de quién supervisa y a quién se supervisa. (hay que preguntar)  
+  
+  Para la realización de los servicios, con frecuencia se utilizan repuestos. Estos provienen de distintos proveedores con los que el taller mantiene relaciones comerciales. Los repuestos tienen un costo unitario y un stock disponible. Una misma orden de trabajo puede requerir varios repuestos, y un repuesto puede utilizarse en diferentes órdenes.  
+  
+  Al finalizar el trabajo, se genera una factura asociada a la orden, en la cual se detallan los costos de mano de obra, repuestos utilizados, impuestos y el valor total a pagar. La factura queda registrada con su fecha de emisión y estado de pago (pendiente, pagada).  
+  
+  El taller desea llevar un sistema de gestión que le permita organizar toda esta información para consultar el historial de cada vehículo, el rendimiento de los mecánicos, la trazabilidad de los repuestos, las relaciones con proveedores y la facturación asociada a los clientes.  
+
 
 ### Objetivo del sistema
 El sistema permitirá:
