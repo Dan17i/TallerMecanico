@@ -1,11 +1,14 @@
 package co.edu.uniquindio.tallermacanico.model;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 /**
- * Representa un movimiento de inventario (entrada, salida o ajuste) de un repuesto.
+ * Representa un movimiento de inventario (entrada o salida) de un repuesto.
  */
 @Data
 @NoArgsConstructor
@@ -15,9 +18,7 @@ public class MovimientoInventario {
     private int idRepuesto;
     private String tipoMovimiento;
     private double cantidad;
-    private String fechaMovimiento;
-    private String referencia;
+    private LocalDate fechaMovimiento;
     private String observaciones;
-
-    // Getters y setters
 }
+

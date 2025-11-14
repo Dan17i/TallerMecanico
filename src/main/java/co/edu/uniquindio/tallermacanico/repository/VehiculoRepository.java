@@ -32,4 +32,13 @@ public class VehiculoRepository {
                 vehiculo.getAnio(),
                 vehiculo.getColor());
     }
+    public Vehiculo buscarPorId(int id) {
+        String sql = "SELECT * FROM vehiculo WHERE id_vehiculo = ?";
+        return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Vehiculo.class), id);
+    }
+    public void eliminarVehiculo(int id) {
+        String sql = "DELETE FROM vehiculo WHERE id_vehiculo = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
 }

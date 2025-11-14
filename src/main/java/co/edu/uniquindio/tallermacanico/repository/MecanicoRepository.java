@@ -20,4 +20,23 @@ public class MecanicoRepository {
         String sql = "SELECT * FROM mecanico";
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Mecanico.class));
     }
+
+    public void registrarMecanico(Mecanico mecanico) {
+        String sql = "INSERT INTO mecanico (nombre, apellido, telefono, experiencia_anios) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql,
+                mecanico.getNombre(),
+                mecanico.getApellido(),
+                mecanico.getTelefono(),
+                mecanico.getExperienciaAnios());
+    }
+
+    public Mecanico buscarPorId(int id) {
+        String sql = "SELECT * FROM mecanico WHERE id_mecanico = ?";
+        return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Mecanico.class), id);
+    }
+
+    public void eliminarMecanico(int id) {
+        String sql = "DELETE FROM mecanico WHERE id_mecanico = ?";
+        jdbcTemplate.update(sql, id);
+    }
 }
