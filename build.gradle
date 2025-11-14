@@ -25,11 +25,20 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // Spring Boot Web para controladores REST
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // JDBC puro para conexión manual a Oracle
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'com.oracle.database.jdbc:ojdbc8:19.3.0.0'
+
+    // Lombok para simplificar getters/setters
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
