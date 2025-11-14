@@ -91,3 +91,5 @@ La entrega debe ser una carpeta con el nombre de los integrantes, que contenga:
 La **sustentación** del proyecto es obligatoria.  
 - Factor multiplicador de **1 sobre la nota**.  
 - Si un estudiante no sustenta o no se presenta, la nota será **0**.  
+
+Integrantes: Daniel Jurado, Salome Perez y Daniela Ospina 
