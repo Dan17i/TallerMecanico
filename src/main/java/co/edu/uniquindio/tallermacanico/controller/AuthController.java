@@ -46,11 +46,4 @@ public class AuthController {
         String mensaje = authService.recuperarPassword(username);
         return ResponseEntity.ok(mensaje);
     }
-
-    @GetMapping("/ver-password")
-    public ResponseEntity<String> verPassword(@RequestParam String username) {
-        authService.mostrarPassword(username);
-        return ResponseEntity.ok("Consulta realizada. Revisa la consola.");
-    }
-
 }

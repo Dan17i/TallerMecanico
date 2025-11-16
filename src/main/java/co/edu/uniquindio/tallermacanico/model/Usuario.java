@@ -15,14 +15,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Usuario {
-    private Long idUsuario;
-    private String username;
-    private String password;
-    private String correo;
-    // El rol no se guarda en la base, siempre es ADMIN
-    public String getRol() {
-        return "ADMIN";
-    }
+    private Long idUsuario;   // PK autogenerada
+    private String username;  // nombre de usuario único
+    private String password;  // contraseña encriptada
+    private String correo;    // correo único
+    private String rol;       // rol del usuario (por defecto ADMIN en BD)
 }
+
 
 

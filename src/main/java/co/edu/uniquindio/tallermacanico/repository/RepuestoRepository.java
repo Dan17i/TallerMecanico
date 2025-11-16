@@ -7,6 +7,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * Repositorio para gestionar operaciones sobre la tabla repuesto.
+ * Proporciona métodos CRUD usando JdbcTemplate.
+ */
 @Repository
 public class RepuestoRepository {
 
@@ -16,8 +20,63 @@ public class RepuestoRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * Obtiene todos los repuestos registrados en la base de datos.
+     *
+     * @return lista de objetos Repuesto
+     */
     public List<Repuesto> listarRepuestos() {
-        String sql = "SELECT * FROM repuesto";
+        String sql = "SELECT id_repuesto AS idRepuesto, nombre, descripcion, stock_actual AS stockActual, unidad_medida AS unidadMedida FROM repuesto";
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Repuesto.class));
+    }
+
+    /**
+     * Registra un nuevo repuesto en la base de datos.
+     *
+     * @param repuesto objeto Repuesto con los datos a insertar
+     */
+    public void registrarRepuesto(Repuesto repuesto) {
+        String sql = "INSERT INTO repuesto (nombre, descripcion, stock_actual, unidad_medida) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql,
+                repuesto.getNombre(),
+                repuesto.getDescripcion(),
+                repuesto.getStockActual(),   // 👈 ahora sí coincide
+                repuesto.getUnidadMedida());
+    }
+
+    /**
+     * Busca un repuesto por su identificador único.
+     *
+     * @param id identificador del repuesto
+     * @return objeto Repuesto encontrado o null si no existe
+     */
+    public Repuesto buscarPorId(int id) {
+        String sql = "SELECT id_repuesto AS idRepuesto, nombre, descripcion, stock_actual AS stockActual, unidad_medida AS unidadMedida FROM repuesto WHERE id_repuesto = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Repuesto.class), id);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Actualiza el stock de un repuesto.
+     *
+     * @param idRepuesto identificador del repuesto
+     * @param nuevoStock nuevo valor de stock
+     */
+    public void actualizarStock(int idRepuesto, double nuevoStock) {
+        String sql = "UPDATE repuesto SET stock_actual = ? WHERE id_repuesto = ?";
+        jdbcTemplate.update(sql, nuevoStock, idRepuesto);
+    }
+
+    /**
+     * Elimina un repuesto de la base de datos por su identificador.
+     *
+     * @param id identificador del repuesto a eliminar
+     */
+    public void eliminarRepuesto(int id) {
+        String sql = "DELETE FROM repuesto WHERE id_repuesto = ?";
+        jdbcTemplate.update(sql, id);
     }
 }
