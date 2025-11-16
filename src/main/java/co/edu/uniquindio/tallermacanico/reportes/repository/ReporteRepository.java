@@ -228,18 +228,27 @@ public class ReporteRepository {
 
     /**
      * Reporte complejo: servicios realizados por un mecánico en órdenes de trabajo.
+     * <p>
+     * Incluye el identificador de la orden de servicio, nombre del mecánico,
+     * nombre del servicio y la fecha de ingreso de la orden de trabajo.
+     * </p>
+     *
      * @param idMecanico identificador del mecánico
      * @return lista de DTOs con servicios realizados
      */
     public List<ServicioMecanicoReporteDTO> listarServiciosPorMecanico(int idMecanico) {
         String sql = """
-        SELECT os.id_orden_servicio, m.nombre AS nombre_mecanico, s.nombre AS nombre_servicio, os.fecha
+        SELECT os.id_orden_servicio,
+               m.nombre || ' ' || m.apellido AS nombre_mecanico,
+               s.nombre AS nombre_servicio,
+               ot.fecha_ingreso AS fecha
         FROM orden_servicio_mecanico osm
         JOIN orden_servicio os ON osm.id_orden_servicio = os.id_orden_servicio
+        JOIN orden_trabajo ot ON os.id_orden_trabajo = ot.id_orden_trabajo
         JOIN mecanico m ON osm.id_mecanico = m.id_mecanico
         JOIN servicio s ON os.id_servicio = s.id_servicio
         WHERE osm.id_mecanico = ?
-        ORDER BY os.fecha DESC
+        ORDER BY ot.fecha_ingreso DESC
     """;
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> new ServicioMecanicoReporteDTO(
@@ -252,17 +261,27 @@ public class ReporteRepository {
 
     /**
      * Reporte complejo: repuestos utilizados en una orden de servicio.
+     * <p>
+     * Se obtiene la información de los repuestos asociados a la orden de trabajo
+     * vinculada a la orden de servicio.
+     * </p>
+     *
      * @param idOrdenServicio identificador de la orden de servicio
      * @return lista de DTOs con repuestos utilizados
      */
     public List<RepuestoOrdenReporteDTO> listarRepuestosPorOrdenServicio(int idOrdenServicio) {
         String sql = """
-        SELECT os.id_orden_servicio, r.nombre AS nombre_repuesto, mi.cantidad, mi.tipo_movimiento, mi.fecha
-        FROM movimiento_inventario mi
-        JOIN repuesto r ON mi.id_repuesto = r.id_repuesto
-        JOIN orden_servicio os ON mi.id_orden_servicio = os.id_orden_servicio
+        SELECT os.id_orden_servicio,
+               r.nombre AS nombre_repuesto,
+               orp.cantidad_usada AS cantidad,
+               'SALIDA' AS tipo_movimiento,
+               ot.fecha_ingreso AS fecha
+        FROM orden_servicio os
+        JOIN orden_trabajo ot ON os.id_orden_trabajo = ot.id_orden_trabajo
+        JOIN orden_repuesto orp ON ot.id_orden_trabajo = orp.id_orden_trabajo
+        JOIN repuesto r ON orp.id_repuesto = r.id_repuesto
         WHERE os.id_orden_servicio = ?
-        ORDER BY mi.fecha DESC
+        ORDER BY ot.fecha_ingreso DESC
     """;
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> new RepuestoOrdenReporteDTO(
@@ -276,12 +295,15 @@ public class ReporteRepository {
 
     /**
      * Reporte complejo: productividad de mecánicos supervisores.
-     * Incluye cantidad de supervisiones y servicios realizados.
+     * <p>
+     * Incluye cantidad de supervisiones realizadas y cantidad de servicios en los que participaron.
+     * </p>
+     *
      * @return lista de DTOs con productividad por supervisor
      */
     public List<ProductividadSupervisorDTO> listarProductividadSupervisores() {
         String sql = """
-        SELECT m.nombre AS nombre_supervisor,
+        SELECT m.nombre || ' ' || m.apellido AS nombre_supervisor,
                (SELECT COUNT(*) 
                 FROM supervision s 
                 WHERE s.id_mecanico_supervisor = m.id_mecanico) AS total_supervisiones,
@@ -289,7 +311,7 @@ public class ReporteRepository {
                 FROM orden_servicio_mecanico osm
                 WHERE osm.id_mecanico = m.id_mecanico) AS total_servicios
         FROM mecanico m
-        WHERE m.es_supervisor = 1
+        WHERE EXISTS (SELECT 1 FROM supervision s WHERE s.id_mecanico_supervisor = m.id_mecanico)
         ORDER BY total_supervisiones DESC
     """;
 
@@ -299,7 +321,6 @@ public class ReporteRepository {
                 rs.getInt("total_servicios")
         ));
     }
-
     /**
      * Consulta estadística: obtiene la distribución de servicios más solicitados.
      * <p>
@@ -311,31 +332,32 @@ public class ReporteRepository {
      */
     public List<ServicioEstadisticoDTO> obtenerServiciosMasSolicitados() {
         String sql = """
-            SELECT s.nombre AS nombre_servicio, COUNT(*) AS total_solicitudes
-            FROM orden_servicio os
-            JOIN servicio s ON os.id_servicio = s.id_servicio
-            GROUP BY s.nombre
-            ORDER BY total_solicitudes DESC
-        """;
+        SELECT s.nombre AS nombre_servicio,
+               COUNT(*) AS total_solicitudes
+        FROM orden_servicio os
+        JOIN servicio s ON os.id_servicio = s.id_servicio
+        GROUP BY s.nombre
+        ORDER BY total_solicitudes DESC
+    """;
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> new ServicioEstadisticoDTO(
                 rs.getString("nombre_servicio"),
                 rs.getLong("total_solicitudes")
         ));
     }
-
     /**
-     * Obtiene la lista de repuestos más usados en órdenes de servicio.
+     * Consulta estadística: obtiene la lista de repuestos más usados en órdenes de servicio.
      * <p>
-     * La consulta cuenta cuántas veces se registró un repuesto en movimientos
-     * de tipo 'SALIDA' dentro de la tabla movimiento_inventario.
+     * Cuenta cuántas veces se registró un repuesto en movimientos de tipo 'SALIDA'
+     * dentro de la tabla movimiento_inventario.
      * </p>
      *
      * @return lista de {@link RepuestoEstadisticoDTO} con nombre del repuesto y total de usos
      */
     public List<RepuestoEstadisticoDTO> obtenerRepuestosMasUsados() {
         String sql = """
-        SELECT r.nombre AS nombre_repuesto, COUNT(*) AS total_usos
+        SELECT r.nombre AS nombre_repuesto,
+               COUNT(*) AS total_usos
         FROM movimiento_inventario mi
         JOIN repuesto r ON mi.id_repuesto = r.id_repuesto
         WHERE mi.tipo_movimiento = 'SALIDA'
@@ -352,17 +374,19 @@ public class ReporteRepository {
     /**
      * Obtiene los ingresos totales agrupados por mes a partir de las órdenes de servicio.
      * <p>
-     * La consulta agrupa por año y mes usando {@code TO_CHAR(fecha, 'YYYY-MM')} y suma el campo {@code total}.
-     * Solo considera la tabla {@code orden_servicio}.
+     * La consulta agrupa por año y mes usando {@code TO_CHAR(ot.fecha_ingreso, 'YYYY-MM')}
+     * y suma el campo {@code precio_final}.
      * </p>
      *
      * @return lista de {@link IngresoMensualDTO} con el mes y el total de ingresos correspondientes
      */
     public List<IngresoMensualDTO> obtenerIngresosPorMes() {
         String sql = """
-        SELECT TO_CHAR(fecha, 'YYYY-MM') AS mes, SUM(total) AS total_ingresos
-        FROM orden_servicio
-        GROUP BY TO_CHAR(fecha, 'YYYY-MM')
+        SELECT TO_CHAR(ot.fecha_ingreso, 'YYYY-MM') AS mes,
+               SUM(os.precio_final) AS total_ingresos
+        FROM orden_servicio os
+        JOIN orden_trabajo ot ON os.id_orden_trabajo = ot.id_orden_trabajo
+        GROUP BY TO_CHAR(ot.fecha_ingreso, 'YYYY-MM')
         ORDER BY mes
     """;
 
@@ -371,6 +395,5 @@ public class ReporteRepository {
                 rs.getBigDecimal("total_ingresos")
         ));
     }
-
 
 }
