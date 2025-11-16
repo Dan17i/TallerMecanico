@@ -32,20 +32,36 @@ public class ReporteRepository {
      * @return lista de clientes
      */
     public List<Cliente> listarClientes() {
-        String sql = "SELECT id_cliente, nombre, cedula, telefono, correo FROM cliente";
+        String sql = "SELECT "
+                + "id_cliente AS idCliente, "
+                + "nombre, "
+                + "apellido, "
+                + "direccion, "
+                + "telefono, "
+                + "email AS correo "
+                + "FROM cliente";
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Cliente.class));
     }
 
+
     /**
      * Reporte simple: listado de vehículos registrados con su cliente asociado.
+     * <p>
+     * Incluye placa, marca, modelo y el nombre completo del propietario.
+     * </p>
+     *
      * @return lista de DTOs de vehículos
      */
     public List<VehiculoReporteDTO> listarVehiculosDTO() {
         String sql = """
-        SELECT v.placa, v.marca, v.modelo, c.nombre AS propietario
+        SELECT v.placa,
+               v.marca,
+               v.modelo,
+               (c.nombre || ' ' || c.apellido) AS propietario
         FROM vehiculo v
         JOIN cliente c ON v.id_cliente = c.id_cliente
     """;
+
         return jdbcTemplate.query(sql, (rs, rowNum) -> new VehiculoReporteDTO(
                 rs.getString("placa"),
                 rs.getString("marca"),
@@ -53,33 +69,51 @@ public class ReporteRepository {
                 rs.getString("propietario")
         ));
     }
+
     /**
      * Reporte simple: listado de servicios disponibles.
+     * <p>
+     * Incluye nombre, descripción y precio base de cada servicio.
+     * </p>
+     *
      * @return lista de DTOs de servicios
      */
     public List<ServicioReporteDTO> listarServiciosDTO() {
-        String sql = "SELECT nombre, descripcion, precio FROM servicio";
+        String sql = """
+        SELECT nombre,
+               descripcion,
+               precio_base
+        FROM servicio
+    """;
+
         return jdbcTemplate.query(sql, (rs, rowNum) -> new ServicioReporteDTO(
                 rs.getString("nombre"),
                 rs.getString("descripcion"),
-                rs.getDouble("precio")
+                rs.getDouble("precio_base")
         ));
-
     }
-
 
     /**
      * Reporte intermedio: órdenes de trabajo por rango de fechas.
+     * <p>
+     * Incluye identificador, vehículo, fechas de ingreso y salida,
+     * diagnóstico inicial y estado de la orden.
+     * </p>
+     *
      * @param fechaInicio fecha inicial del rango
      * @param fechaFin fecha final del rango
      * @return lista de DTOs de órdenes de trabajo
      */
     public List<OrdenTrabajoDTO> listarOrdenesTrabajoPorFechas(LocalDate fechaInicio, LocalDate fechaFin) {
         String sql = """
-        SELECT ot.id_orden_trabajo, ot.id_vehiculo, ot.fecha_ingreso, ot.fecha_salida,
-               ot.diagnostico_inicial, eo.nombre_estado
+        SELECT ot.id_orden_trabajo,
+               ot.id_vehiculo,
+               ot.fecha_ingreso,
+               ot.fecha_salida,
+               ot.diagnostico_inicial,
+               eo.nombre_estado
         FROM orden_trabajo ot
-        JOIN estado_orden eo ON ot.id_estado = eo.id_estado
+        JOIN estado_orden eo ON ot.id_estado_orden = eo.id_estado_orden
         WHERE ot.fecha_ingreso BETWEEN ? AND ?
         ORDER BY ot.fecha_ingreso
     """;
@@ -94,17 +128,28 @@ public class ReporteRepository {
         ), fechaInicio, fechaFin);
     }
 
+
     /**
      * Reporte intermedio: facturas emitidas por un cliente específico.
+     * <p>
+     * Se obtiene la información de la factura y el nombre del cliente
+     * a través de la relación factura → orden_trabajo → vehiculo → cliente.
+     * </p>
+     *
      * @param idCliente identificador del cliente
      * @return lista de DTOs de facturas
      */
     public List<FacturaReporteDTO> listarFacturasPorCliente(int idCliente) {
         String sql = """
-        SELECT f.id_factura, f.fecha_emision, f.total, c.nombre AS cliente
+        SELECT f.id_factura,
+               f.fecha_emision,
+               f.total,
+               c.nombre || ' ' || c.apellido AS cliente
         FROM factura f
-        JOIN cliente c ON f.id_cliente = c.id_cliente
-        WHERE f.id_cliente = ?
+        JOIN orden_trabajo ot ON f.id_orden_trabajo = ot.id_orden_trabajo
+        JOIN vehiculo v ON ot.id_vehiculo = v.id_vehiculo
+        JOIN cliente c ON v.id_cliente = c.id_cliente
+        WHERE c.id_cliente = ?
         ORDER BY f.fecha_emision DESC
     """;
 
@@ -118,52 +163,68 @@ public class ReporteRepository {
 
     /**
      * Reporte intermedio: movimientos de inventario por repuesto.
+     * <p>
+     * Incluye identificador del movimiento, tipo, cantidad, fecha del movimiento
+     * y el nombre del repuesto asociado.
+     * </p>
+     *
      * @param idRepuesto identificador del repuesto
      * @return lista de DTOs de movimientos de inventario
      */
     public List<InventarioReporteDTO> listarMovimientosPorRepuesto(int idRepuesto) {
         String sql = """
-        SELECT mi.id_movimiento, mi.tipo_movimiento, mi.cantidad, mi.fecha, r.nombre AS nombre_repuesto
+        SELECT mi.id_movimiento,
+               mi.tipo_movimiento,
+               mi.cantidad,
+               mi.fecha_movimiento,
+               r.nombre AS nombre_repuesto
         FROM movimiento_inventario mi
         JOIN repuesto r ON mi.id_repuesto = r.id_repuesto
         WHERE mi.id_repuesto = ?
-        ORDER BY mi.fecha DESC
+        ORDER BY mi.fecha_movimiento DESC
     """;
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> new InventarioReporteDTO(
                 rs.getInt("id_movimiento"),
                 rs.getString("tipo_movimiento"),
                 rs.getInt("cantidad"),
-                rs.getDate("fecha").toLocalDate(),
+                rs.getDate("fecha_movimiento").toLocalDate(),
                 rs.getString("nombre_repuesto")
         ), idRepuesto);
-
-     }
+    }
 
     /**
      * Reporte intermedio: supervisiones realizadas por un mecánico supervisor.
+     * <p>
+     * Incluye el identificador de la orden de servicio, nombre del supervisor,
+     * nombre del mecánico supervisado y observaciones.
+     * </p>
+     *
      * @param idSupervisor identificador del mecánico supervisor
      * @return lista de DTOs de supervisiones
      */
     public List<SupervisionReporteDTO> listarSupervisionesPorMecanico(int idSupervisor) {
         String sql = """
-        SELECT s.id_supervision, sup.nombre AS supervisor, mec.nombre AS mecanico_supervisado,
-               s.fecha, s.observaciones
+        SELECT s.id_orden_servicio,
+               sup.nombre || ' ' || sup.apellido AS supervisor,
+               mec.nombre || ' ' || mec.apellido AS mecanico_supervisado,
+               s.observaciones
         FROM supervision s
         JOIN mecanico sup ON s.id_mecanico_supervisor = sup.id_mecanico
         JOIN mecanico mec ON s.id_mecanico_supervisado = mec.id_mecanico
         WHERE s.id_mecanico_supervisor = ?
-        ORDER BY s.fecha DESC
+        ORDER BY s.id_orden_servicio DESC
     """;
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> new SupervisionReporteDTO(
-                rs.getInt("id_supervision"),
+                rs.getInt("id_orden_servicio"),
                 rs.getString("supervisor"),
                 rs.getString("mecanico_supervisado"),
-                rs.getDate("fecha").toLocalDate(),
                 rs.getString("observaciones")
         ), idSupervisor);
     }
+
+
 
     /**
      * Reporte complejo: servicios realizados por un mecánico en órdenes de trabajo.

@@ -13,15 +13,15 @@ public class SupervisionReporteDTO {
     private String mecanicoSupervisado;
     private LocalDate fecha;
     private String observaciones;
+    private int idOrdenServicio;
 
     public SupervisionReporteDTO() {}
 
-    public SupervisionReporteDTO(int idSupervision, String supervisor, String mecanicoSupervisado,
-                                 LocalDate fecha, String observaciones) {
-        this.idSupervision = idSupervision;
+    public SupervisionReporteDTO(int idOrdenServicio, String supervisor, String mecanicoSupervisado,
+                                 String observaciones) {
+        this.idOrdenServicio = idOrdenServicio;
         this.supervisor = supervisor;
         this.mecanicoSupervisado = mecanicoSupervisado;
-        this.fecha = fecha;
         this.observaciones = observaciones;
     }
 
