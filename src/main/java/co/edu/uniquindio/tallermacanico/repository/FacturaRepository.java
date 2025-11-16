@@ -50,7 +50,7 @@ public class FacturaRepository {
      *
      * @param factura objeto Factura con los datos a insertar
      */
-    public void registrarFactura(Factura factura) {
+    public int registrarFactura(Factura factura) {
         String sql = "INSERT INTO factura (id_orden_trabajo, id_estado_pago, fecha_emision, subtotal_servicios, subtotal_repuestos, impuestos_total, descuento_total, total) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
@@ -62,15 +62,21 @@ public class FacturaRepository {
                 factura.getImpuestosTotal(),
                 factura.getDescuentoTotal(),
                 factura.getTotal());
+
+        // Recuperar el último ID generado
+        return jdbcTemplate.queryForObject("SELECT MAX(id_factura) FROM factura", Integer.class);
     }
+
 
     /**
      * Elimina una factura de la base de datos por su identificador.
      *
      * @param id identificador de la factura a eliminar
      */
-    public void eliminarFactura(int id) {
+    public boolean eliminarFactura(int id) {
         String sql = "DELETE FROM factura WHERE id_factura = ?";
-        jdbcTemplate.update(sql, id);
+        int filas = jdbcTemplate.update(sql, id);
+        return filas > 0; // true si se eliminó, false si no existía
     }
+
 }

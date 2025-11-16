@@ -20,22 +20,15 @@ public class ClienteRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    /**
-     * Obtiene todos los clientes registrados en la base de datos.
-     *
-     * @return lista de objetos Cliente
-     */
     public List<Cliente> listarClientes() {
         String sql = "SELECT * FROM cliente";
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Cliente.class));
     }
 
     /**
-     * Registra un nuevo cliente en la base de datos.
-     *
-     * @param cliente objeto Cliente con los datos a insertar
+     * Registra un nuevo cliente y devuelve el ID generado.
      */
-    public void registrarCliente(Cliente cliente) {
+    public int registrarCliente(Cliente cliente) {
         String sql = "INSERT INTO cliente (nombre, apellido, direccion, telefono, email) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
                 cliente.getNombre(),
@@ -43,26 +36,24 @@ public class ClienteRepository {
                 cliente.getDireccion(),
                 cliente.getTelefono(),
                 cliente.getEmail());
+
+        // Recuperar el último ID generado (Oracle/SQL estándar)
+        return jdbcTemplate.queryForObject("SELECT MAX(id_cliente) FROM cliente", Integer.class);
     }
 
-    /**
-     * Busca un cliente por su identificador único.
-     *
-     * @param idCliente identificador del cliente
-     * @return objeto Cliente encontrado
-     */
     public Cliente buscarPorId(int idCliente) {
         String sql = "SELECT * FROM cliente WHERE id_cliente = ?";
-        return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Cliente.class), idCliente);
+        List<Cliente> clientes = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Cliente.class), idCliente);
+        return clientes.isEmpty() ? null : clientes.get(0);
     }
 
     /**
-     * Elimina un cliente de la base de datos por su identificador.
-     *
-     * @param idCliente identificador del cliente a eliminar
+     * Elimina un cliente y devuelve true si se eliminó, false si no existía.
      */
-    public void eliminarCliente(int idCliente) {
+    public boolean eliminarCliente(int idCliente) {
         String sql = "DELETE FROM cliente WHERE id_cliente = ?";
-        jdbcTemplate.update(sql, idCliente);
+        int filas = jdbcTemplate.update(sql, idCliente);
+        return filas > 0;
     }
 }
+

@@ -73,7 +73,11 @@ public class MecanicoServiceImpl implements MecanicoService {
         if (id <= 0) {
             throw new IllegalArgumentException("El ID del mecánico debe ser mayor que cero");
         }
-        mecanicoRepository.eliminarMecanico(id);
+        boolean eliminado = mecanicoRepository.eliminarMecanicoConRelaciones(id);
+        if (!eliminado) {
+            throw new IllegalStateException("No se pudo eliminar el mecánico ni sus relaciones");
+        }
+
     }
 }
 

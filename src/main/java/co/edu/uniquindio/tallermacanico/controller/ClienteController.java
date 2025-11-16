@@ -1,5 +1,6 @@
 package co.edu.uniquindio.tallermacanico.controller;
 
+import co.edu.uniquindio.tallermacanico.dto.ApiErrorResponse;
 import co.edu.uniquindio.tallermacanico.model.Cliente;
 import co.edu.uniquindio.tallermacanico.repository.ClienteRepository;
 import org.springframework.http.ResponseEntity;
@@ -17,34 +18,60 @@ public class ClienteController {
         this.clienteRepository = clienteRepository;
     }
 
+    /**
+     * Obtiene todos los clientes registrados.
+     */
     @GetMapping
     public ResponseEntity<List<Cliente>> obtenerClientes() {
         return ResponseEntity.ok(clienteRepository.listarClientes());
     }
 
+    /**
+     * Registra un nuevo cliente y devuelve el ID generado.
+     */
     @PostMapping
-    public ResponseEntity<String> registrarCliente(@RequestBody Cliente cliente) {
-        clienteRepository.registrarCliente(cliente);
-        return ResponseEntity.ok("Cliente registrado correctamente");
+    public ResponseEntity<Cliente> registrarCliente(@RequestBody Cliente cliente) {
+        int idGenerado = clienteRepository.registrarCliente(cliente);
+        cliente.setIdCliente(idGenerado);
+        return ResponseEntity.ok(cliente);
     }
 
+
+    /**
+     * Busca un cliente por su ID.
+     */
     @GetMapping("/{id}")
-    public ResponseEntity<Cliente> buscarPorId(@PathVariable int id) {
-        try {
-            Cliente cliente = clienteRepository.buscarPorId(id);
+    public ResponseEntity<?> buscarPorId(@PathVariable int id) {
+        Cliente cliente = clienteRepository.buscarPorId(id);
+        if (cliente != null) {
             return ResponseEntity.ok(cliente);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.status(404).body(
+                new ApiErrorResponse(
+                        "Cliente no encontrado",
+                        "ID: " + id + ". Verifica si el cliente fue registrado o consulta /api/clientes para ver los disponibles."
+                )
+        );
     }
 
+
+    /**
+     * Elimina un cliente por su ID.
+     */
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> eliminarCliente(@PathVariable int id) {
-        try {
-            clienteRepository.eliminarCliente(id);
+    public ResponseEntity<?> eliminarCliente(@PathVariable int id) {
+        boolean eliminado = clienteRepository.eliminarCliente(id);
+        if (eliminado) {
             return ResponseEntity.ok("Cliente eliminado correctamente");
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.status(404).body(
+                new ApiErrorResponse(
+                        "Cliente no encontrado",
+                        "ID: " + id + ". Verifica si el cliente existe o consulta /api/clientes para ver los disponibles."
+                )
+        );
     }
+
+
 }
+

@@ -1,5 +1,5 @@
 ###
-
+# Prueba de login exitoso con el usuario quemado en BD
 POST http://localhost:8080/api/auth/login
 Content-Type: application/json
 
@@ -7,3 +7,161 @@ Content-Type: application/json
 "username": "admin",
 "password": "admin123"
 }
+
+###
+# Prueba de login fallido con credenciales incorrectas
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "wrongpass"
+}
+
+###
+# Prueba de recuperación de contraseña (simulada)
+GET http://localhost:8080/api/auth/recuperar?username=admin
+
+###
+# Prueba de recuperación con usuario inexistente
+GET http://localhost:8080/api/auth/recuperar?username=otroUsuario
+
+###
+# 👥 Obtener todos los clientes
+GET http://localhost:8080/api/clientes
+
+###
+# 👥 Registrar un nuevo cliente
+POST http://localhost:8080/api/clientes
+Content-Type: application/json
+
+{
+  "nombre": "Daniel",
+  "apellido": "Jurado",
+  "direccion": "Calle 123",
+  "telefono": "3001234567",
+  "email": "daniel@correo.com"
+}
+
+###
+# 👥 Buscar cliente por ID existente
+GET http://localhost:8080/api/clientes/1
+
+###
+# 👥 Buscar cliente por ID inexistente
+GET http://localhost:8080/api/clientes/999
+
+###
+# 👥 Eliminar cliente por ID existente
+DELETE http://localhost:8080/api/clientes/1
+
+###
+# 👥 Eliminar cliente por ID inexistente
+DELETE http://localhost:8080/api/clientes/999
+
+###
+# 👥 Eliminar cliente por ID inexistente (debe devolver JSON de error)
+DELETE http://localhost:8080/api/clientes/999
+
+###
+# 👥 Buscar cliente por ID inexistente (debe devolver JSON de error)
+GET http://localhost:8080/api/clientes/999
+
+###
+# 👥 Obtener todos los clientes
+GET http://localhost:8080/api/clientes
+
+###
+# 👥 Buscar cliente por ID existente
+GET http://localhost:8080/api/clientes/62
+###
+# 👥 Eliminar cliente por ID existente
+DELETE http://localhost:8080/api/clientes/62
+
+
+###
+# 📑 Obtener todas las facturas
+GET http://localhost:8080/api/facturas
+
+###
+# 📑 Buscar factura por ID existente
+GET http://localhost:8080/api/facturas/1
+
+###
+# 📑 Buscar factura por ID inexistente
+GET http://localhost:8080/api/facturas/999
+
+###
+# 📑 Registrar una nueva factura
+POST http://localhost:8080/api/facturas
+Content-Type: application/json
+
+{
+  "idOrdenTrabajo": 10,
+  "idEstadoPago": 1,
+  "fechaEmision": "2025-11-15",
+  "subtotalServicios": 500000,
+  "subtotalRepuestos": 200000,
+  "impuestosTotal": 133000,
+  "descuentoTotal": 0,
+  "total": 833000
+}
+
+###
+# 📑 Eliminar factura por ID existente
+DELETE http://localhost:8080/api/facturas/1
+
+###
+# 📑 Eliminar factura por ID inexistente
+DELETE http://localhost:8080/api/facturas/999
+
+###
+# 📑 Registrar una nueva factura
+POST http://localhost:8080/api/facturas
+Content-Type: application/json
+
+{
+  "idOrdenTrabajo": 62,
+  "idEstadoPago": 1,
+  "fechaEmision": "2025-11-16",
+  "subtotalServicios": 500000,
+  "subtotalRepuestos": 200000,
+  "impuestosTotal": 133000,
+  "descuentoTotal": 0,
+  "total": 833000
+}
+###
+# Crear mecánico
+POST http://localhost:8080/api/mecanicos
+Content-Type: application/json
+
+{
+  "nombre": "Carlos",
+  "apellido": "Ramírez",
+  "telefono": "3124567890",
+  "experienciaAnios": 5
+}
+
+###
+# Consultar todos los mecánicos
+GET http://localhost:8080/api/mecanicos
+
+###
+# Consultar mecánico por ID
+GET http://localhost:8080/api/mecanicos/1
+
+###
+# Eliminar mecánico por ID
+DELETE http://localhost:8080/api/mecanicos/1
+###
+# Agregar mecanico
+POST http://localhost:8080/api/mecanicos
+Content-Type: application/json
+
+{
+  "nombre": "Alejandro",
+  "apellido": "Ramírez",
+  "telefono": "3112223333",
+  "experienciaAnios": 6
+}
+

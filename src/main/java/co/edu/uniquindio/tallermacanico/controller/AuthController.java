@@ -3,7 +3,6 @@ package co.edu.uniquindio.tallermacanico.controller;
 import co.edu.uniquindio.tallermacanico.dto.LoginDTO;
 import co.edu.uniquindio.tallermacanico.service.AuthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
