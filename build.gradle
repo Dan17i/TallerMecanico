@@ -36,6 +36,11 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    // iText 7 para generar PDFs profesionales
+    implementation 'com.itextpdf:kernel:8.0.2'
+    implementation 'com.itextpdf:layout:8.0.2'
+    implementation 'com.itextpdf:io:8.0.2'
+
     // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

@@ -289,19 +289,23 @@ public class ReporteRepository {
     }
 
     /**
-     * Obtiene los ingresos totales agrupados por mes a partir de las órdenes de servicio.
+     * Obtiene los ingresos totales agrupados por mes a partir de las facturas emitidas.
      * <p>
-     * La consulta agrupa por año y mes usando {@code TO_CHAR(fecha, 'YYYY-MM')} y suma el campo {@code total}.
-     * Solo considera la tabla {@code orden_servicio}.
+     * La consulta agrupa por año y mes usando {@code TO_CHAR(fecha_emision, 'YYYY-MM')}
+     * y suma el campo {@code total} de la tabla factura.
+     * Solo considera facturas en estado PAGADO (sin distinción de mayúsculas/minúsculas).
      * </p>
      *
-     * @return lista de {@link IngresoMensualDTO} con el mes y el total de ingresos correspondientes
+     * @return lista de {@link IngresoMensualDTO} con el mes y el total de ingresos
      */
     public List<IngresoMensualDTO> obtenerIngresosPorMes() {
         String sql = """
-        SELECT TO_CHAR(fecha, 'YYYY-MM') AS mes, SUM(total) AS total_ingresos
-        FROM orden_servicio
-        GROUP BY TO_CHAR(fecha, 'YYYY-MM')
+        SELECT TO_CHAR(f.fecha_emision, 'YYYY-MM') AS mes, 
+               SUM(f.total) AS total_ingresos
+        FROM factura f
+        JOIN estado_pago_factura epf ON f.id_estado_pago = epf.id_estado_pago
+        WHERE UPPER(epf.nombre_estado) = 'PAGADO'
+        GROUP BY TO_CHAR(f.fecha_emision, 'YYYY-MM')
         ORDER BY mes
     """;
 
