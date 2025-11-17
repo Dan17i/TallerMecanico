@@ -271,3 +271,68 @@ Content-Type: application/json
   "idEspecialidad": 1,
   "observaciones": "Supervisión inicial del servicio"
 }
+
+###
+# 1. Listar todas las asignaciones
+GET http://localhost:8080/api/orden-servicio-mecanico
+
+###
+#para saber que idOrden hay disponible
+GET http://localhost:8080/api/orden-servicio
+###
+#Orden mecanico servicio
+POST http://localhost:8080/api/orden-servicio-mecanico
+Content-Type: application/json
+
+{
+  "idOrdenServicio": 22,
+  "idMecanico": 1,
+  "idEspecialidad": 1,
+  "rolEnServicio": "Ejecutor"
+}
+
+###
+# Para saber que IdMecanico esta disponible
+GET http://localhost:8080/api/mecanico
+
+###
+#Para saber que especialidad hay
+GET http://localhost:8080/api/especialidad
+
+###
+# 1. Listar todas las especialidades
+GET http://localhost:8080/api/especialidades
+
+###
+# 2. Registrar nueva especialidad
+POST http://localhost:8080/api/especialidades
+Content-Type: application/json
+
+{
+  "nombre": "Climatización"
+}
+
+###
+# 3. Registrar especialidad inválida (nombre vacío)
+POST http://localhost:8080/api/especialidades
+Content-Type: application/json
+
+{
+  "nombre": ""
+}
+
+###
+# 4. Consultar especialidad por ID existente
+GET http://localhost:8080/api/especialidades/1
+
+###
+# 5. Consultar especialidad por ID inexistente
+GET http://localhost:8080/api/especialidades/3
+
+###
+# 6. Eliminar especialidad por ID existente
+DELETE http://localhost:8080/api/especialidades/21
+
+###
+# 7. Eliminar especialidad por ID inexistente
+DELETE http://localhost:8080/api/especialidades/999

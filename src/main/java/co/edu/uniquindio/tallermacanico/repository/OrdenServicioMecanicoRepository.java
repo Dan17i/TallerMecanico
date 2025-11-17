@@ -26,7 +26,11 @@ public class OrdenServicioMecanicoRepository {
      * @return lista de objetos OrdenServicioMecanico
      */
     public List<OrdenServicioMecanico> listarAsignaciones() {
-        String sql = "SELECT * FROM orden_servicio_mecanico";
+        String sql = "SELECT id_orden_servicio AS idOrdenServicio, " +
+                "id_mecanico AS idMecanico, " +
+                "id_especialidad AS idEspecialidad, " +
+                "rol_en_servicio AS rolEnServicio " +
+                "FROM orden_servicio_mecanico";
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(OrdenServicioMecanico.class));
     }
 
@@ -38,9 +42,14 @@ public class OrdenServicioMecanicoRepository {
      * @return objeto OrdenServicioMecanico encontrado o null si no existe
      */
     public OrdenServicioMecanico buscarPorOrdenYPorMecanico(int idOrdenServicio, int idMecanico) {
-        String sql = "SELECT * FROM orden_servicio_mecanico WHERE id_orden_servicio = ? AND id_mecanico = ?";
+        String sql = "SELECT id_orden_servicio AS idOrdenServicio, " +
+                "id_mecanico AS idMecanico, " +
+                "id_especialidad AS idEspecialidad, " +
+                "rol_en_servicio AS rolEnServicio " +
+                "FROM orden_servicio_mecanico WHERE id_orden_servicio = ? AND id_mecanico = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(OrdenServicioMecanico.class), idOrdenServicio, idMecanico);
+            return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(OrdenServicioMecanico.class),
+                    idOrdenServicio, idMecanico);
         } catch (Exception e) {
             return null; // Manejo simple: retorna null si no se encuentra
         }
@@ -72,3 +81,4 @@ public class OrdenServicioMecanicoRepository {
         jdbcTemplate.update(sql, idOrdenServicio, idMecanico);
     }
 }
+
