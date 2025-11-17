@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Controlador REST para gestionar la asignación de mecánicos a servicios dentro de una orden de trabajo.
@@ -33,34 +34,47 @@ public class OrdenServicioMecanicoController {
      * Busca una asignación específica por ID de orden-servicio y ID de mecánico.
      * @param idOrdenServicio ID del servicio
      * @param idMecanico ID del mecánico
-     * @return asignación encontrada
+     * @return asignación encontrada o 404 si no existe
      */
     @GetMapping("/{idOrdenServicio}/{idMecanico}")
-    public ResponseEntity<OrdenServicioMecanico> buscar(@PathVariable int idOrdenServicio, @PathVariable int idMecanico) {
-        return ResponseEntity.ok(ordenServicioMecanicoService.buscarPorOrdenYPorMecanico(idOrdenServicio, idMecanico));
+    public ResponseEntity<?> buscar(@PathVariable int idOrdenServicio, @PathVariable int idMecanico) {
+        OrdenServicioMecanico asignacion = ordenServicioMecanicoService.buscarPorOrdenYPorMecanico(idOrdenServicio, idMecanico);
+        if (asignacion == null) {
+            return ResponseEntity.status(404).body(Map.of("error", "Asignación no encontrada"));
+        }
+        return ResponseEntity.ok(asignacion);
     }
 
     /**
      * Registra una nueva asignación de mecánico a un servicio.
      * @param asignacion objeto con los datos de la asignación
-     * @return respuesta vacía si se registra correctamente
+     * @return mensaje de confirmación o error de validación
      */
     @PostMapping
-    public ResponseEntity<Void> registrar(@RequestBody OrdenServicioMecanico asignacion) {
-        ordenServicioMecanicoService.registrarAsignacion(asignacion);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> registrar(@RequestBody OrdenServicioMecanico asignacion) {
+        try {
+            ordenServicioMecanicoService.registrarAsignacion(asignacion);
+            return ResponseEntity.ok(Map.of("mensaje", "Asignación registrada correctamente"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
     /**
      * Elimina una asignación por ID de orden-servicio y ID de mecánico.
      * @param idOrdenServicio ID del servicio
      * @param idMecanico ID del mecánico
-     * @return respuesta vacía si se elimina correctamente
+     * @return mensaje de confirmación o 404 si no existe
      */
     @DeleteMapping("/{idOrdenServicio}/{idMecanico}")
-    public ResponseEntity<Void> eliminar(@PathVariable int idOrdenServicio, @PathVariable int idMecanico) {
+    public ResponseEntity<?> eliminar(@PathVariable int idOrdenServicio, @PathVariable int idMecanico) {
+        OrdenServicioMecanico asignacion = ordenServicioMecanicoService.buscarPorOrdenYPorMecanico(idOrdenServicio, idMecanico);
+        if (asignacion == null) {
+            return ResponseEntity.status(404).body(Map.of("error", "Asignación no encontrada"));
+        }
         ordenServicioMecanicoService.eliminarAsignacion(idOrdenServicio, idMecanico);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(Map.of("mensaje", "Asignación eliminada correctamente"));
     }
 }
+
 

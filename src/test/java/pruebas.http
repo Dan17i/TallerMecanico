@@ -1,0 +1,338 @@
+###
+# Prueba de login exitoso con el usuario quemado en BD
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+"username": "admin",
+"password": "admin123"
+}
+
+###
+# Prueba de login fallido con credenciales incorrectas
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "wrongpass"
+}
+
+###
+# Prueba de recuperación de contraseña (simulada)
+GET http://localhost:8080/api/auth/recuperar?username=admin
+
+###
+# Prueba de recuperación con usuario inexistente
+GET http://localhost:8080/api/auth/recuperar?username=otroUsuario
+
+###
+# 👥 Obtener todos los clientes
+GET http://localhost:8080/api/clientes
+
+###
+# 👥 Registrar un nuevo cliente
+POST http://localhost:8080/api/clientes
+Content-Type: application/json
+
+{
+  "nombre": "Daniel",
+  "apellido": "Jurado",
+  "direccion": "Calle 123",
+  "telefono": "3001234567",
+  "email": "daniel@correo.com"
+}
+
+###
+# 👥 Buscar cliente por ID existente
+GET http://localhost:8080/api/clientes/1
+
+###
+# 👥 Buscar cliente por ID inexistente
+GET http://localhost:8080/api/clientes/999
+
+###
+# 👥 Eliminar cliente por ID existente
+DELETE http://localhost:8080/api/clientes/1
+
+###
+# 👥 Eliminar cliente por ID inexistente
+DELETE http://localhost:8080/api/clientes/999
+
+###
+# 👥 Eliminar cliente por ID inexistente (debe devolver JSON de error)
+DELETE http://localhost:8080/api/clientes/999
+
+###
+# 👥 Buscar cliente por ID inexistente (debe devolver JSON de error)
+GET http://localhost:8080/api/clientes/999
+
+###
+# 👥 Obtener todos los clientes
+GET http://localhost:8080/api/clientes
+
+###
+# 👥 Buscar cliente por ID existente
+GET http://localhost:8080/api/clientes/62
+###
+# 👥 Eliminar cliente por ID existente
+DELETE http://localhost:8080/api/clientes/62
+
+
+###
+# 📑 Obtener todas las facturas
+GET http://localhost:8080/api/facturas
+
+###
+# 📑 Buscar factura por ID existente
+GET http://localhost:8080/api/facturas/1
+
+###
+# 📑 Buscar factura por ID inexistente
+GET http://localhost:8080/api/facturas/999
+
+###
+# 📑 Registrar una nueva factura
+POST http://localhost:8080/api/facturas
+Content-Type: application/json
+
+{
+  "idOrdenTrabajo": 10,
+  "idEstadoPago": 1,
+  "fechaEmision": "2025-11-15",
+  "subtotalServicios": 500000,
+  "subtotalRepuestos": 200000,
+  "impuestosTotal": 133000,
+  "descuentoTotal": 0,
+  "total": 833000
+}
+
+###
+# 📑 Eliminar factura por ID existente
+DELETE http://localhost:8080/api/facturas/1
+
+###
+# 📑 Eliminar factura por ID inexistente
+DELETE http://localhost:8080/api/facturas/999
+
+###
+# 📑 Registrar una nueva factura
+POST http://localhost:8080/api/facturas
+Content-Type: application/json
+
+{
+  "idOrdenTrabajo": 62,
+  "idEstadoPago": 1,
+  "fechaEmision": "2025-11-16",
+  "subtotalServicios": 500000,
+  "subtotalRepuestos": 200000,
+  "impuestosTotal": 133000,
+  "descuentoTotal": 0,
+  "total": 833000
+}
+###
+# Crear mecánico
+POST http://localhost:8080/api/mecanicos
+Content-Type: application/json
+
+{
+  "nombre": "Carlos",
+  "apellido": "Ramírez",
+  "telefono": "3124567890",
+  "experienciaAnios": 5
+}
+
+###
+# Consultar todos los mecánicos
+GET http://localhost:8080/api/mecanicos
+
+###
+# Consultar mecánico por ID
+GET http://localhost:8080/api/mecanicos/1
+
+###
+# Eliminar mecánico por ID
+DELETE http://localhost:8080/api/mecanicos/1
+###
+# Agregar mecanico
+POST http://localhost:8080/api/mecanicos
+Content-Type: application/json
+
+{
+  "nombre": "Alejandro",
+  "apellido": "Ramírez",
+  "telefono": "3112223333",
+  "experienciaAnios": 6
+}
+
+###
+#registrar un nuevo repuesto
+POST http://localhost:8080/api/repuestos
+Content-Type: application/json
+
+{
+  "nombre": "Filtro de aceite",
+  "descripcion": "Filtro para motor 1.6",
+  "stockActual": 15,
+  "unidadMedida": "unidad"
+}
+###
+# Consultar todos los repuestos
+GET http://localhost:8080/api/repuestos
+
+###
+# Consultar repuesto por ID
+GET http://localhost:8080/api/repuestos/21
+
+###
+# Actualizar stock
+PATCH http://localhost:8080/api/repuestos/21/stock?nuevoStock=25
+###
+# Eliminar repuesto
+DELETE http://localhost:8080/api/repuestos/21
+
+###
+# 1. Listar todos los servicios
+GET http://localhost:8080/api/servicios
+
+###
+# 2. Registrar un nuevo servicio
+POST http://localhost:8080/api/servicios
+Content-Type: application/json
+
+{
+  "nombre": "Cambio de llanta",
+  "descripcion": "Servicio de cambio de llanta para moto",
+  "precioBase": 70000
+}
+
+###
+# 3. Consultar servicio por ID
+GET http://localhost:8080/api/servicios/81
+
+###
+# 4. Actualizar precio base de un servicio
+PATCH http://localhost:8080/api/servicios/81/precio?nuevoPrecio=85000
+
+###
+# 5. Eliminar un servicio por ID
+DELETE http://localhost:8080/api/servicios/81
+
+###
+# 1. Listar todos los movimientos de inventario
+GET http://localhost:8080/api/movimiento-inventario
+###
+# 2. Registrar un nuevo movimiento de inventario
+POST http://localhost:8080/api/movimiento-inventario
+Content-Type: application/json
+
+{
+  "idRepuesto": 1,
+  "tipoMovimiento": "entrada",
+  "cantidad": 10,
+  "fechaMovimiento": "2025-11-16",
+  "referencia": "OT-2",
+  "observaciones": "Ingreso inicial de stock"
+}
+###
+# 3. Consultar un movimiento por ID
+GET http://localhost:8080/api/movimiento-inventario/22
+###
+# 4. Eliminar un movimiento por ID
+DELETE http://localhost:8080/api/movimiento-inventario/22
+
+###
+# 5. Registrar un movimiento inválido (cantidad negativa)
+POST http://localhost:8080/api/movimiento-inventario
+Content-Type: application/json
+
+{
+  "idRepuesto": 1,
+  "tipoMovimiento": "salida",
+  "cantidad": -5,
+  "fechaMovimiento": "2025-11-16",
+  "referencia": "Orden #124",
+  "observaciones": "Error de prueba"
+}
+
+###
+# 1. Listar todas las supervisiones
+GET http://localhost:8080/api/supervision
+
+###
+# 2. Registrar una nueva supervisión
+POST http://localhost:8080/api/supervision
+Content-Type: application/json
+
+{
+  "idOrdenServicio": 1,
+  "idMecanicoSupervisor": 44,
+  "idMecanicoSupervisado": 42,
+  "idEspecialidad": 1,
+  "observaciones": "Supervisión inicial del servicio"
+}
+
+###
+# 1. Listar todas las asignaciones
+GET http://localhost:8080/api/orden-servicio-mecanico
+
+###
+#para saber que idOrden hay disponible
+GET http://localhost:8080/api/orden-servicio
+###
+#Orden mecanico servicio
+POST http://localhost:8080/api/orden-servicio-mecanico
+Content-Type: application/json
+
+{
+  "idOrdenServicio": 22,
+  "idMecanico": 1,
+  "idEspecialidad": 1,
+  "rolEnServicio": "Ejecutor"
+}
+
+###
+# Para saber que IdMecanico esta disponible
+GET http://localhost:8080/api/mecanico
+
+###
+#Para saber que especialidad hay
+GET http://localhost:8080/api/especialidad
+
+###
+# 1. Listar todas las especialidades
+GET http://localhost:8080/api/especialidades
+
+###
+# 2. Registrar nueva especialidad
+POST http://localhost:8080/api/especialidades
+Content-Type: application/json
+
+{
+  "nombre": "Climatización"
+}
+
+###
+# 3. Registrar especialidad inválida (nombre vacío)
+POST http://localhost:8080/api/especialidades
+Content-Type: application/json
+
+{
+  "nombre": ""
+}
+
+###
+# 4. Consultar especialidad por ID existente
+GET http://localhost:8080/api/especialidades/1
+
+###
+# 5. Consultar especialidad por ID inexistente
+GET http://localhost:8080/api/especialidades/3
+
+###
+# 6. Eliminar especialidad por ID existente
+DELETE http://localhost:8080/api/especialidades/21
+
+###
+# 7. Eliminar especialidad por ID inexistente
+DELETE http://localhost:8080/api/especialidades/999

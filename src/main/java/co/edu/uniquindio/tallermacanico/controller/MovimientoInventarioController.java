@@ -1,15 +1,22 @@
 package co.edu.uniquindio.tallermacanico.controller;
 
-
 import co.edu.uniquindio.tallermacanico.model.MovimientoInventario;
 import co.edu.uniquindio.tallermacanico.service.MovimientoInventarioService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
- * Controlador REST para gestionar los movimientos de inventario (entrada y salida de repuestos).
+ * Controlador REST para gestionar los movimientos de inventario (entrada, salida y ajuste de repuestos).
+ * Expone endpoints para listar, registrar, consultar y eliminar movimientos.
+ *
+ * <p>Ruta base: {@code /api/movimiento-inventario}</p>
+ *
+ * <p>Relación con la base de datos:</p>
+ * - Utiliza la tabla {@code movimiento_inventario} con campos: id_movimiento, id_repuesto, tipo_movimiento, cantidad, fecha_movimiento, referencia, observaciones.
+ * - El campo {@code id_movimiento} se genera automáticamente mediante identidad.
  */
 @RestController
 @RequestMapping("/api/movimiento-inventario")
@@ -23,7 +30,8 @@ public class MovimientoInventarioController {
 
     /**
      * Lista todos los movimientos registrados en el inventario.
-     * @return lista de movimientos
+     *
+     * @return lista de objetos {@link MovimientoInventario}
      */
     @GetMapping
     public ResponseEntity<List<MovimientoInventario>> listar() {
@@ -31,35 +39,49 @@ public class MovimientoInventarioController {
     }
 
     /**
-     * Busca un movimiento por su ID.
+     * Consulta un movimiento por su identificador único.
+     *
      * @param id identificador del movimiento
-     * @return movimiento encontrado
+     * @return objeto {@link MovimientoInventario} si existe, o {@code 404 Not Found} si no se encuentra
      */
     @GetMapping("/{id}")
-    public ResponseEntity<MovimientoInventario> buscar(@PathVariable int id) {
-        return ResponseEntity.ok(movimientoInventarioService.buscarPorId(id));
+    public ResponseEntity<?> buscar(@PathVariable int id) {
+        MovimientoInventario movimiento = movimientoInventarioService.buscarPorId(id);
+        if (movimiento == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(movimiento);
     }
 
     /**
-     * Registra un nuevo movimiento de inventario.
-     * @param movimiento objeto con los datos del movimiento
-     * @return respuesta vacía si se registra correctamente
+     * Registra un nuevo movimiento de inventario en la base de datos.
+     *
+     * @param movimiento objeto {@link MovimientoInventario} con los datos a insertar
+     * @return objeto {@link MovimientoInventario} con el ID generado
      */
     @PostMapping
-    public ResponseEntity<Void> registrar(@RequestBody MovimientoInventario movimiento) {
-        movimientoInventarioService.registrarMovimiento(movimiento);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> registrar(@RequestBody MovimientoInventario movimiento) {
+        try {
+            movimientoInventarioService.registrarMovimiento(movimiento);
+            return ResponseEntity.ok(movimiento);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
     /**
-     * Elimina un movimiento por su ID.
+     * Elimina un movimiento de inventario por su identificador.
+     *
      * @param id identificador del movimiento
-     * @return respuesta vacía si se elimina correctamente
+     * @return mensaje de confirmación o {@code 404 Not Found} si no existe
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable int id) {
+    public ResponseEntity<?> eliminar(@PathVariable int id) {
+        MovimientoInventario movimiento = movimientoInventarioService.buscarPorId(id);
+        if (movimiento == null) {
+            return ResponseEntity.notFound().build();
+        }
         movimientoInventarioService.eliminarMovimiento(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(Map.of("mensaje", "Movimiento eliminado correctamente"));
     }
 }
-

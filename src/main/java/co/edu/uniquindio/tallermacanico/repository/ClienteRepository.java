@@ -1,6 +1,5 @@
 package co.edu.uniquindio.tallermacanico.repository;
 
-
 import co.edu.uniquindio.tallermacanico.model.Cliente;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -10,7 +9,7 @@ import java.util.List;
 
 /**
  * Repositorio para gestionar operaciones sobre la tabla Cliente.
- * Aquí se definen las consultas SQL relacionadas con clientes.
+ * Proporciona métodos CRUD usando JdbcTemplate.
  */
 @Repository
 public class ClienteRepository {
@@ -21,14 +20,15 @@ public class ClienteRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // Obtener todos los clientes
     public List<Cliente> listarClientes() {
         String sql = "SELECT * FROM cliente";
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Cliente.class));
     }
 
-    // Registrar un nuevo cliente
-    public void registrarCliente(Cliente cliente) {
+    /**
+     * Registra un nuevo cliente y devuelve el ID generado.
+     */
+    public int registrarCliente(Cliente cliente) {
         String sql = "INSERT INTO cliente (nombre, apellido, direccion, telefono, email) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
                 cliente.getNombre(),
@@ -36,18 +36,24 @@ public class ClienteRepository {
                 cliente.getDireccion(),
                 cliente.getTelefono(),
                 cliente.getEmail());
+
+        // Recuperar el último ID generado (Oracle/SQL estándar)
+        return jdbcTemplate.queryForObject("SELECT MAX(id_cliente) FROM cliente", Integer.class);
     }
 
-    // Buscar cliente por ID
     public Cliente buscarPorId(int idCliente) {
         String sql = "SELECT * FROM cliente WHERE id_cliente = ?";
-        return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Cliente.class), idCliente);
+        List<Cliente> clientes = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Cliente.class), idCliente);
+        return clientes.isEmpty() ? null : clientes.get(0);
     }
 
-    // Eliminar cliente
-    public void eliminarCliente(int idCliente) {
+    /**
+     * Elimina un cliente y devuelve true si se eliminó, false si no existía.
+     */
+    public boolean eliminarCliente(int idCliente) {
         String sql = "DELETE FROM cliente WHERE id_cliente = ?";
-        jdbcTemplate.update(sql, idCliente);
+        int filas = jdbcTemplate.update(sql, idCliente);
+        return filas > 0;
     }
 }
 

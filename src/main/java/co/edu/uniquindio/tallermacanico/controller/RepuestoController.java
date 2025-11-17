@@ -7,6 +7,21 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controlador REST para gestionar operaciones sobre los repuestos del taller.
+ * Expone endpoints para listar, registrar, consultar, eliminar y actualizar stock.
+ *
+ * <p>Ruta base: {@code /api/repuestos}</p>
+ *
+ * <p>Relación con la base de datos:</p>
+ * - Utiliza la tabla {@code repuesto} con campos: id_repuesto, nombre, descripcion, stock_actual, unidad_medida.
+ * - El campo {@code id_repuesto} se genera automáticamente mediante secuencia Oracle.
+ *
+ * <p>Validaciones:</p>
+ * - Se valida existencia antes de eliminar o actualizar.
+ * - Se devuelve {@code 404 Not Found} si el repuesto no existe.
+ * - Se devuelve {@code 200 OK} con el objeto afectado o mensaje de confirmación.
+ */
 @RestController
 @RequestMapping("/api/repuestos")
 public class RepuestoController {
@@ -17,6 +32,11 @@ public class RepuestoController {
         this.repuestoRepository = repuestoRepository;
     }
 
+    /**
+     * Lista todos los repuestos registrados en la base de datos.
+     *
+     * @return lista de objetos {@link Repuesto}
+     */
     @GetMapping
     public ResponseEntity<List<Repuesto>> obtenerRepuestos() {
         return ResponseEntity.ok(repuestoRepository.listarRepuestos());
@@ -61,4 +81,5 @@ public class RepuestoController {
 
 
 }
+
 

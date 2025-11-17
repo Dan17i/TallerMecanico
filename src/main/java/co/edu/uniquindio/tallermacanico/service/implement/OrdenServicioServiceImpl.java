@@ -3,6 +3,7 @@ package co.edu.uniquindio.tallermacanico.service.implement;
 import co.edu.uniquindio.tallermacanico.model.OrdenServicio;
 import co.edu.uniquindio.tallermacanico.repository.OrdenServicioRepository;
 import co.edu.uniquindio.tallermacanico.service.OrdenServicioService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,14 +12,11 @@ import java.util.List;
  * Implementación del servicio para la entidad OrdenServicio.
  * Contiene validaciones de negocio y delega operaciones al repositorio.
  */
+@RequiredArgsConstructor
 @Service
 public class OrdenServicioServiceImpl implements OrdenServicioService {
 
     private final OrdenServicioRepository ordenServicioRepository;
-
-    public OrdenServicioServiceImpl(OrdenServicioRepository ordenServicioRepository) {
-        this.ordenServicioRepository = ordenServicioRepository;
-    }
 
     /**
      * Lista todos los registros de servicios aplicados en órdenes de trabajo.

@@ -19,6 +19,7 @@ public class MovimientoInventario {
     private String tipoMovimiento;
     private double cantidad;
     private LocalDate fechaMovimiento;
+    private String referencia;
     private String observaciones;
 }
 

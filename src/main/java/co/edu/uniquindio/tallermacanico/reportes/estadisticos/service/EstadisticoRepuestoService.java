@@ -6,12 +6,26 @@ import co.edu.uniquindio.tallermacanico.reportes.repository.ReporteRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+/**
+ * Servicio para obtener reportes estadísticos relacionados con repuestos y servicios.
+ */
 @Service
 public class EstadisticoRepuestoService {
+
     private final ReporteRepository reporteRepository;
 
     public EstadisticoRepuestoService(ReporteRepository reporteRepository) {
         this.reporteRepository = reporteRepository;
+    }
+
+    /**
+     * Obtiene la distribución de servicios más solicitados.
+     *
+     * @return lista de {@link ServicioEstadisticoDTO}
+     */
+    public List<ServicioEstadisticoDTO> getDistribucionServicios() {
+        return reporteRepository.obtenerServiciosMasSolicitados();
     }
 
     /**

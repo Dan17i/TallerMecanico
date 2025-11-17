@@ -1,5 +1,6 @@
 package co.edu.uniquindio.tallermacanico.repository;
 
+import co.edu.uniquindio.tallermacanico.model.OrdenServicio;
 import co.edu.uniquindio.tallermacanico.model.OrdenTrabajo;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -57,5 +58,18 @@ public class OrdenTrabajoRepository {
     public void eliminarOrdenTrabajo(int id) {
         String sql = "DELETE FROM orden_trabajo WHERE id_orden_trabajo = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    /**
+     * Obtiene todas las órdenes de servicio junto con el nombre del servicio y el estado.
+     *
+     * @return lista de objetos OrdenServicio enriquecidos con datos adicionales
+     */
+    public List<OrdenServicio> listarOrdenesConDetalles() {
+        String sql = "SELECT os.id_orden_servicio, os.id_orden_trabajo, os.id_servicio, " +
+                "s.nombre AS nombre_servicio, os.estado, os.precio_final " +
+                "FROM orden_servicio os " +
+                "JOIN servicio s ON os.id_servicio = s.id_servicio";
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(OrdenServicio.class));
     }
 }

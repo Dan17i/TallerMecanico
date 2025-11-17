@@ -1,34 +1,22 @@
 package co.edu.uniquindio.tallermacanico.reportes.estadisticos.service;
 
-import co.edu.uniquindio.tallermacanico.dto.*;
-import co.edu.uniquindio.tallermacanico.model.Cliente;
-import co.edu.uniquindio.tallermacanico.reportes.estadisticos.dto.IngresoMensualDTO;
-import co.edu.uniquindio.tallermacanico.reportes.estadisticos.dto.RepuestoEstadisticoDTO;
-import co.edu.uniquindio.tallermacanico.reportes.estadisticos.dto.ServicioEstadisticoDTO;
-import co.edu.uniquindio.tallermacanico.reportes.repository.ReporteRepository;
-import com.itextpdf.io.font.constants.StandardFonts;
-import com.itextpdf.kernel.colors.ColorConstants;
-import com.itextpdf.kernel.font.PdfFont;
-import com.itextpdf.kernel.font.PdfFontFactory;
-import com.itextpdf.kernel.pdf.PdfDocument;
+import co.edu.uniquindio.tallermacanico.reportes.estadisticos.dto.*;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
-import com.itextpdf.layout.properties.TextAlignment;
-import com.itextpdf.layout.properties.UnitValue;
+import com.itextpdf.layout.element.Cell;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 /**
- * Servicio para generar reportes en formato PDF usando iText 8.
- * Contiene métodos para los 10 reportes del sistema MotorPlus.
+ * Servicio encargado de generar reportes PDF a partir de datos estadísticos.
+ * Utiliza la librería iText para construir documentos en memoria.
  */
 @Service
 public class ReportePDFService {

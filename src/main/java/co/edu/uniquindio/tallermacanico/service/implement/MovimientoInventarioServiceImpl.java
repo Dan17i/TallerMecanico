@@ -4,6 +4,7 @@ package co.edu.uniquindio.tallermacanico.service.implement;
 import co.edu.uniquindio.tallermacanico.model.MovimientoInventario;
 import co.edu.uniquindio.tallermacanico.repository.MovimientoInventarioRepository;
 import co.edu.uniquindio.tallermacanico.service.MovimientoInventarioService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,14 +13,11 @@ import java.util.List;
  * Implementación del servicio para la entidad MovimientoInventario.
  * Contiene validaciones de negocio y delega operaciones al repositorio.
  */
+@RequiredArgsConstructor
 @Service
 public class MovimientoInventarioServiceImpl implements MovimientoInventarioService {
 
     private final MovimientoInventarioRepository repository;
-
-    public MovimientoInventarioServiceImpl(MovimientoInventarioRepository repository) {
-        this.repository = repository;
-    }
 
     @Override
     public List<MovimientoInventario> listarMovimientos() {
@@ -43,8 +41,9 @@ public class MovimientoInventarioServiceImpl implements MovimientoInventarioServ
             throw new IllegalArgumentException("El tipo de movimiento es obligatorio");
         }
         if (!movimiento.getTipoMovimiento().equalsIgnoreCase("entrada") &&
-                !movimiento.getTipoMovimiento().equalsIgnoreCase("salida")) {
-            throw new IllegalArgumentException("El tipo de movimiento debe ser 'entrada' o 'salida'");
+                !movimiento.getTipoMovimiento().equalsIgnoreCase("salida") &&
+                !movimiento.getTipoMovimiento().equalsIgnoreCase("ajuste")) {
+            throw new IllegalArgumentException("El tipo de movimiento debe ser 'entrada', 'salida' o 'ajuste'");
         }
         if (movimiento.getCantidad() <= 0) {
             throw new IllegalArgumentException("La cantidad debe ser mayor que cero");
@@ -52,8 +51,12 @@ public class MovimientoInventarioServiceImpl implements MovimientoInventarioServ
         if (movimiento.getFechaMovimiento() == null) {
             throw new IllegalArgumentException("La fecha del movimiento es obligatoria");
         }
-        repository.registrarMovimiento(movimiento);
+
+        // Aquí capturas el ID generado por la base de datos
+        int idGenerado = repository.registrarMovimiento(movimiento);
+        movimiento.setIdMovimiento(idGenerado);
     }
+
 
     @Override
     public void eliminarMovimiento(int id) {
@@ -62,5 +65,6 @@ public class MovimientoInventarioServiceImpl implements MovimientoInventarioServ
         }
         repository.eliminarMovimiento(id);
     }
+
 }
 
