@@ -21,6 +21,3 @@ public class Usuario {
     private String correo;    // correo único
     private String rol;       // rol del usuario (por defecto ADMIN en BD)
 }
-
-
-
