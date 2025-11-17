@@ -165,3 +165,109 @@ Content-Type: application/json
   "experienciaAnios": 6
 }
 
+###
+#registrar un nuevo repuesto
+POST http://localhost:8080/api/repuestos
+Content-Type: application/json
+
+{
+  "nombre": "Filtro de aceite",
+  "descripcion": "Filtro para motor 1.6",
+  "stockActual": 15,
+  "unidadMedida": "unidad"
+}
+###
+# Consultar todos los repuestos
+GET http://localhost:8080/api/repuestos
+
+###
+# Consultar repuesto por ID
+GET http://localhost:8080/api/repuestos/21
+
+###
+# Actualizar stock
+PATCH http://localhost:8080/api/repuestos/21/stock?nuevoStock=25
+###
+# Eliminar repuesto
+DELETE http://localhost:8080/api/repuestos/21
+
+###
+# 1. Listar todos los servicios
+GET http://localhost:8080/api/servicios
+
+###
+# 2. Registrar un nuevo servicio
+POST http://localhost:8080/api/servicios
+Content-Type: application/json
+
+{
+  "nombre": "Cambio de llanta",
+  "descripcion": "Servicio de cambio de llanta para moto",
+  "precioBase": 70000
+}
+
+###
+# 3. Consultar servicio por ID
+GET http://localhost:8080/api/servicios/81
+
+###
+# 4. Actualizar precio base de un servicio
+PATCH http://localhost:8080/api/servicios/81/precio?nuevoPrecio=85000
+
+###
+# 5. Eliminar un servicio por ID
+DELETE http://localhost:8080/api/servicios/81
+
+###
+# 1. Listar todos los movimientos de inventario
+GET http://localhost:8080/api/movimiento-inventario
+###
+# 2. Registrar un nuevo movimiento de inventario
+POST http://localhost:8080/api/movimiento-inventario
+Content-Type: application/json
+
+{
+  "idRepuesto": 1,
+  "tipoMovimiento": "entrada",
+  "cantidad": 10,
+  "fechaMovimiento": "2025-11-16",
+  "referencia": "OT-2",
+  "observaciones": "Ingreso inicial de stock"
+}
+###
+# 3. Consultar un movimiento por ID
+GET http://localhost:8080/api/movimiento-inventario/22
+###
+# 4. Eliminar un movimiento por ID
+DELETE http://localhost:8080/api/movimiento-inventario/22
+
+###
+# 5. Registrar un movimiento inválido (cantidad negativa)
+POST http://localhost:8080/api/movimiento-inventario
+Content-Type: application/json
+
+{
+  "idRepuesto": 1,
+  "tipoMovimiento": "salida",
+  "cantidad": -5,
+  "fechaMovimiento": "2025-11-16",
+  "referencia": "Orden #124",
+  "observaciones": "Error de prueba"
+}
+
+###
+# 1. Listar todas las supervisiones
+GET http://localhost:8080/api/supervision
+
+###
+# 2. Registrar una nueva supervisión
+POST http://localhost:8080/api/supervision
+Content-Type: application/json
+
+{
+  "idOrdenServicio": 1,
+  "idMecanicoSupervisor": 44,
+  "idMecanicoSupervisado": 42,
+  "idEspecialidad": 1,
+  "observaciones": "Supervisión inicial del servicio"
+}

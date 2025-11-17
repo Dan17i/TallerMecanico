@@ -3,8 +3,11 @@ package co.edu.uniquindio.tallermacanico.repository;
 import co.edu.uniquindio.tallermacanico.model.MovimientoInventario;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 
 /**
@@ -50,16 +53,26 @@ public class MovimientoInventarioRepository {
      *
      * @param movimiento objeto MovimientoInventario con los datos a insertar
      */
-    public void registrarMovimiento(MovimientoInventario movimiento) {
-        String sql = "INSERT INTO movimiento_inventario (id_repuesto, tipo_movimiento, cantidad, fecha_movimiento, observaciones) " +
-                "VALUES (?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql,
-                movimiento.getIdRepuesto(),
-                movimiento.getTipoMovimiento(),
-                movimiento.getCantidad(),
-                movimiento.getFechaMovimiento(),
-                movimiento.getObservaciones());
+    public int registrarMovimiento(MovimientoInventario movimiento) {
+        String sql = "INSERT INTO movimiento_inventario (id_repuesto, tipo_movimiento, cantidad, fecha_movimiento, referencia, observaciones) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id_movimiento"});
+            ps.setInt(1, movimiento.getIdRepuesto());
+            ps.setString(2, movimiento.getTipoMovimiento());
+            ps.setDouble(3, movimiento.getCantidad());
+            ps.setDate(4, java.sql.Date.valueOf(movimiento.getFechaMovimiento())); // ✅ corregido
+            ps.setString(5, movimiento.getReferencia()); // ahora existe en el modelo
+            ps.setString(6, movimiento.getObservaciones());
+            return ps;
+        }, keyHolder);
+
+        return keyHolder.getKey().intValue();
     }
+
+
 
     /**
      * Elimina un movimiento de inventario por su identificador.

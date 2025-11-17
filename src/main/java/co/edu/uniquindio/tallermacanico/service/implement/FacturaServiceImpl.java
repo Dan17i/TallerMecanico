@@ -3,6 +3,7 @@ package co.edu.uniquindio.tallermacanico.service.implement;
 import co.edu.uniquindio.tallermacanico.model.Factura;
 import co.edu.uniquindio.tallermacanico.repository.FacturaRepository;
 import co.edu.uniquindio.tallermacanico.service.FacturaService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,14 +12,11 @@ import java.util.List;
  * Implementación del servicio para la entidad Factura.
  * Contiene validaciones de negocio y delega operaciones al repositorio.
  */
+@RequiredArgsConstructor
 @Service
 public class FacturaServiceImpl implements FacturaService {
 
     private final FacturaRepository facturaRepository;
-
-    public FacturaServiceImpl(FacturaRepository facturaRepository) {
-        this.facturaRepository = facturaRepository;
-    }
 
     /**
      * Lista todas las facturas registradas en la base de datos.

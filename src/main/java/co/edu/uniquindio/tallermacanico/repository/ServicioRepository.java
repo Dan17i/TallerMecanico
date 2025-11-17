@@ -3,8 +3,11 @@ package co.edu.uniquindio.tallermacanico.repository;
 import co.edu.uniquindio.tallermacanico.model.Servicio;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 
 /**
@@ -50,12 +53,19 @@ public class ServicioRepository {
      *
      * @param servicio objeto Servicio con los datos a insertar
      */
-    public void registrarServicio(Servicio servicio) {
+    public int registrarServicio(Servicio servicio) {
         String sql = "INSERT INTO servicio (nombre, descripcion, precio_base) VALUES (?, ?, ?)";
-        jdbcTemplate.update(sql,
-                servicio.getNombre(),
-                servicio.getDescripcion(),
-                servicio.getPrecioBase());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id_servicio"});
+            ps.setString(1, servicio.getNombre());
+            ps.setString(2, servicio.getDescripcion());
+            ps.setDouble(3, servicio.getPrecioBase());
+            return ps;
+        }, keyHolder);
+
+        return keyHolder.getKey().intValue();
     }
 
     /**

@@ -3,8 +3,11 @@ package co.edu.uniquindio.tallermacanico.repository;
 import co.edu.uniquindio.tallermacanico.model.Repuesto;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 
 /**
@@ -35,14 +38,23 @@ public class RepuestoRepository {
      *
      * @param repuesto objeto Repuesto con los datos a insertar
      */
-    public void registrarRepuesto(Repuesto repuesto) {
+
+    public int registrarRepuesto(Repuesto repuesto) {
         String sql = "INSERT INTO repuesto (nombre, descripcion, stock_actual, unidad_medida) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sql,
-                repuesto.getNombre(),
-                repuesto.getDescripcion(),
-                repuesto.getStockActual(),   // 👈 ahora sí coincide
-                repuesto.getUnidadMedida());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id_repuesto"});
+            ps.setString(1, repuesto.getNombre());
+            ps.setString(2, repuesto.getDescripcion());
+            ps.setDouble(3, repuesto.getStockActual());
+            ps.setString(4, repuesto.getUnidadMedida());
+            return ps;
+        }, keyHolder);
+
+        return keyHolder.getKey().intValue(); // 👈 ahora sí devuelve el ID
     }
+
 
     /**
      * Busca un repuesto por su identificador único.

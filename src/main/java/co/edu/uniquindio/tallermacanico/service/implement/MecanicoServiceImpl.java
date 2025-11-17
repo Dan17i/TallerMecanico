@@ -4,6 +4,7 @@ package co.edu.uniquindio.tallermacanico.service.implement;
 import co.edu.uniquindio.tallermacanico.model.Mecanico;
 import co.edu.uniquindio.tallermacanico.repository.MecanicoRepository;
 import co.edu.uniquindio.tallermacanico.service.MecanicoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,15 +13,11 @@ import java.util.List;
  * Implementación del servicio para la entidad Mecanico.
  * Contiene validaciones de negocio y delega operaciones al repositorio.
  */
+@RequiredArgsConstructor
 @Service
 public class MecanicoServiceImpl implements MecanicoService {
 
     private final MecanicoRepository mecanicoRepository;
-
-    public MecanicoServiceImpl(MecanicoRepository mecanicoRepository) {
-        this.mecanicoRepository = mecanicoRepository;
-    }
-
     /**
      * Lista todos los mecánicos registrados en la base de datos.
      * @return lista de mecánicos

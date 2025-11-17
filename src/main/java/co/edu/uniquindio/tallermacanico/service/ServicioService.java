@@ -14,4 +14,12 @@ public interface ServicioService {
     void registrarServicio(Servicio servicio);
 
     void eliminarServicio(int id);
+
+    /**
+     * Actualiza el precio base de un servicio existente.
+     *
+     * @param idServicio identificador del servicio
+     * @param nuevoPrecio nuevo valor del precio base; debe ser mayor que cero
+     */
+    void actualizarPrecioBase(int idServicio, double nuevoPrecio);
 }

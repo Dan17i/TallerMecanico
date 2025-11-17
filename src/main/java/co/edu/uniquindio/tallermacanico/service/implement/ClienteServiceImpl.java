@@ -3,6 +3,7 @@ package co.edu.uniquindio.tallermacanico.service.implement;
 import co.edu.uniquindio.tallermacanico.model.Cliente;
 import co.edu.uniquindio.tallermacanico.repository.ClienteRepository;
 import co.edu.uniquindio.tallermacanico.service.ClienteService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,14 +12,11 @@ import java.util.List;
  * Implementación del servicio para la entidad Cliente.
  * Contiene validaciones de negocio y delega operaciones al repositorio.
  */
+@RequiredArgsConstructor
 @Service
 public class ClienteServiceImpl implements ClienteService {
 
     private final ClienteRepository clienteRepository;
-
-    public ClienteServiceImpl(ClienteRepository clienteRepository) {
-        this.clienteRepository = clienteRepository;
-    }
 
     /**
      * Lista todos los clientes registrados en la base de datos.

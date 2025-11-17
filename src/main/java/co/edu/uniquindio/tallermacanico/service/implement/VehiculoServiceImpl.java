@@ -4,6 +4,7 @@ package co.edu.uniquindio.tallermacanico.service.implement;
 import co.edu.uniquindio.tallermacanico.model.Vehiculo;
 import co.edu.uniquindio.tallermacanico.repository.VehiculoRepository;
 import co.edu.uniquindio.tallermacanico.service.VehiculoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,14 +13,11 @@ import java.util.List;
  * Implementación del servicio para la entidad Vehiculo.
  * Contiene validaciones de negocio y delega operaciones al repositorio.
  */
+@RequiredArgsConstructor
 @Service
 public class VehiculoServiceImpl implements VehiculoService {
 
     private final VehiculoRepository vehiculoRepository;
-
-    public VehiculoServiceImpl(VehiculoRepository vehiculoRepository) {
-        this.vehiculoRepository = vehiculoRepository;
-    }
 
     @Override
     public List<Vehiculo> listarVehiculos() {

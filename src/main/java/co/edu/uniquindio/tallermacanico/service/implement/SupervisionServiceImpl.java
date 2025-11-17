@@ -4,6 +4,7 @@ package co.edu.uniquindio.tallermacanico.service.implement;
 import co.edu.uniquindio.tallermacanico.model.Supervision;
 import co.edu.uniquindio.tallermacanico.repository.SupervisionRepository;
 import co.edu.uniquindio.tallermacanico.service.SupervisionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,14 +13,11 @@ import java.util.List;
  * Implementación del servicio para la entidad Supervision.
  * Contiene validaciones de negocio y delega operaciones al repositorio.
  */
+@RequiredArgsConstructor
 @Service
 public class SupervisionServiceImpl implements SupervisionService {
 
     private final SupervisionRepository repository;
-
-    public SupervisionServiceImpl(SupervisionRepository repository) {
-        this.repository = repository;
-    }
 
     @Override
     public List<Supervision> listarSupervisiones() {
