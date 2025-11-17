@@ -7,8 +7,8 @@ import java.math.BigDecimal;
  */
 public class IngresoMensualDTO {
 
-    private String mes;
-    private BigDecimal totalIngresos;
+    private String mes;               // ✅ Eje X (temporal)
+    private BigDecimal totalIngresos; // ✅ Eje Y (monetario)
 
     public IngresoMensualDTO() {}
 

@@ -42,66 +42,44 @@ public class RepuestoController {
         return ResponseEntity.ok(repuestoRepository.listarRepuestos());
     }
 
-    /**
-     * Registra un nuevo repuesto en la base de datos.
-     *
-     * @param repuesto objeto {@link Repuesto} con los datos a insertar
-     * @return objeto {@link Repuesto} con el ID generado
-     */
     @PostMapping
-    public ResponseEntity<Repuesto> registrarRepuesto(@RequestBody Repuesto repuesto) {
-        int idGenerado = repuestoRepository.registrarRepuesto(repuesto);
-        repuesto.setIdRepuesto(idGenerado);
-        return ResponseEntity.ok(repuesto);
+    public ResponseEntity<String> crearRepuesto(@RequestBody Repuesto repuesto) {
+        int filasAfectadas = repuestoRepository.crearRepuesto(repuesto);
+        if (filasAfectadas > 0) {
+            return ResponseEntity.ok("Repuesto creado exitosamente");
+        } else {
+            return ResponseEntity.badRequest().body("No se pudo crear el repuesto");
+        }
     }
-
-    /**
-     * Consulta un repuesto por su identificador único.
-     *
-     * @param id identificador del repuesto
-     * @return objeto {@link Repuesto} si existe, o {@code 404 Not Found} si no se encuentra
-     */
     @GetMapping("/{id}")
-    public ResponseEntity<?> obtenerRepuestoPorId(@PathVariable int id) {
+    public ResponseEntity<Repuesto> obtenerRepuestoPorId(@PathVariable int id) {
         Repuesto repuesto = repuestoRepository.buscarPorId(id);
-        if (repuesto == null) {
+        if (repuesto != null) {
+            return ResponseEntity.ok(repuesto);
+        } else {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(repuesto);
     }
-
-    /**
-     * Elimina un repuesto por su identificador.
-     *
-     * @param id identificador del repuesto
-     * @return {@code 200 OK} si se elimina correctamente, o {@code 404 Not Found} si no existe
-     */
+    @PutMapping("/{id}")
+    public ResponseEntity<String> actualizarRepuesto(@PathVariable int id, @RequestBody Repuesto repuesto) {
+        int filas = repuestoRepository.actualizarRepuesto(id, repuesto);
+        if (filas > 0) {
+            return ResponseEntity.ok("Repuesto actualizado correctamente");
+        } else {
+            return ResponseEntity.badRequest().body("No se pudo actualizar el repuesto");
+        }
+    }
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminarRepuesto(@PathVariable int id) {
-        Repuesto repuesto = repuestoRepository.buscarPorId(id);
-        if (repuesto == null) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<String> eliminarRepuesto(@PathVariable int id) {
+        int filas = repuestoRepository.eliminarRepuesto(id);
+        if (filas > 0) {
+            return ResponseEntity.ok("Repuesto eliminado correctamente");
+        } else {
+            return ResponseEntity.badRequest().body("No se pudo eliminar el repuesto");
         }
-        repuestoRepository.eliminarRepuesto(id);
-        return ResponseEntity.ok("Repuesto eliminado correctamente");
     }
 
-    /**
-     * Actualiza el stock de un repuesto existente.
-     *
-     * @param id identificador del repuesto
-     * @param nuevoStock nuevo valor de stock
-     * @return {@code 200 OK} si se actualiza correctamente, o {@code 404 Not Found} si no existe
-     */
-    @PatchMapping("/{id}/stock")
-    public ResponseEntity<?> actualizarStock(@PathVariable int id, @RequestParam double nuevoStock) {
-        Repuesto repuesto = repuestoRepository.buscarPorId(id);
-        if (repuesto == null) {
-            return ResponseEntity.notFound().build();
-        }
-        repuestoRepository.actualizarStock(id, nuevoStock);
-        return ResponseEntity.ok("Stock actualizado correctamente");
-    }
+
 }
 
 

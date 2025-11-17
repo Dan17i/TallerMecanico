@@ -32,6 +32,36 @@ public class RepuestoRepository {
         String sql = "SELECT id_repuesto AS idRepuesto, nombre, descripcion, stock_actual AS stockActual, unidad_medida AS unidadMedida FROM repuesto";
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Repuesto.class));
     }
+    public int crearRepuesto(Repuesto repuesto) {
+        String sql = "INSERT INTO repuesto (nombre, descripcion, stock_actual, unidad_medida) VALUES (?, ?, ?, ?)";
+        return jdbcTemplate.update(sql,
+                repuesto.getNombre(),
+                repuesto.getDescripcion(),
+                repuesto.getStockActual(),
+                repuesto.getUnidadMedida()
+        );
+    }
+    public Repuesto buscarPorId(int id) {
+        String sql = "SELECT * FROM repuesto WHERE id_repuesto = ?";
+        List<Repuesto> resultado = jdbcTemplate.query(sql,
+                new BeanPropertyRowMapper<>(Repuesto.class),
+                id);
+        return resultado.isEmpty() ? null : resultado.get(0);
+    }
+
+    public int actualizarRepuesto(int id, Repuesto repuesto) {
+        String sql = "UPDATE repuesto SET nombre = ?, descripcion = ?, stock_actual = ?, unidad_medida = ? WHERE id_repuesto = ?";
+        return jdbcTemplate.update(sql,
+                repuesto.getNombre(),
+                repuesto.getDescripcion(),
+                repuesto.getStockActual(),
+                repuesto.getUnidadMedida(),
+                id);
+    }
+
+    public int eliminarRepuesto(int id) {
+        String sql = "DELETE FROM repuesto WHERE id_repuesto = ?";
+        return jdbcTemplate.update(sql, id);
 
     /**
      * Registra un nuevo repuesto en la base de datos.

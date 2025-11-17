@@ -5,8 +5,8 @@ package co.edu.uniquindio.tallermacanico.reportes.estadisticos.dto;
  */
 public class ServicioEstadisticoDTO {
 
-    private String nombreServicio;
-    private long totalSolicitudes;
+    private String nombreServicio; // ✅ Eje X o Etiquetas
+    private long totalSolicitudes; // ✅ Eje Y o Valores
 
     public ServicioEstadisticoDTO() {}
 
