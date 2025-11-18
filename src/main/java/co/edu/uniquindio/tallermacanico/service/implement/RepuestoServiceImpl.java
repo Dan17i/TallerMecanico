@@ -25,10 +25,11 @@ public class RepuestoServiceImpl implements RepuestoService {
 
     @Override
     public Repuesto registrarRepuesto(Repuesto repuesto) {
-        int id = repuestoRepository.registrarRepuesto(repuesto);
+        int id = repuestoRepository.crearRepuesto(repuesto);
         repuesto.setIdRepuesto(id);
         return repuesto;
     }
+
 
     @Override
     public Repuesto obtenerPorId(int id) {
