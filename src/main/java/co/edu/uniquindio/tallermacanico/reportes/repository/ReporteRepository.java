@@ -197,7 +197,7 @@ public class ReporteRepository {
     }
 
     /**
-     * Reporte intermedio: supervisiones realizadas por un mecánico supervisor.
+     * Reporte intermedio: 7. Supervisiones realizadas por un mecánico supervisor.
      * <p>
      * Incluye el identificador de la orden de servicio, nombre del supervisor,
      * nombre del mecánico supervisado y observaciones.
@@ -227,10 +227,12 @@ public class ReporteRepository {
         ), idSupervisor);
     }
 
-
+    // =====================================================
+    // REPORTES COMPLEJOS
+    // =====================================================
 
     /**
-     * Reporte complejo: servicios realizados por un mecánico en órdenes de trabajo.
+     * Reporte complejo: 8. Servicios realizados por un mecánico en órdenes de trabajo.
      * <p>
      * Incluye el identificador de la orden de servicio, nombre del mecánico,
      * nombre del servicio y la fecha de ingreso de la orden de trabajo.
@@ -297,7 +299,7 @@ public class ReporteRepository {
     }
 
     /**
-     * Reporte complejo: productividad de mecánicos supervisores.
+     * Reporte complejo: 10. Productividad de mecánicos supervisores.
      * <p>
      * Incluye cantidad de supervisiones realizadas y cantidad de servicios en los que participaron.
      * </p>
@@ -324,8 +326,12 @@ public class ReporteRepository {
                 rs.getInt("total_servicios")
         ));
     }
+
+    // =====================================================
+    // REPORTES ESTADÍSTICOS
+    // =====================================================
     /**
-     * Consulta estadística: obtiene la distribución de servicios más solicitados.
+     * Consulta estadística: 11. Obtiene la distribución de servicios más solicitados.
      * <p>
      * Agrupa las órdenes de servicio por nombre de servicio y cuenta cuántas veces
      * fue solicitado cada uno.
@@ -349,7 +355,7 @@ public class ReporteRepository {
         ));
     }
     /**
-     * Consulta estadística: obtiene la lista de repuestos más usados en órdenes de servicio.
+     * Consulta estadística: 12. Obtiene la lista de repuestos más usados en órdenes de servicio.
      * <p>
      * Cuenta cuántas veces se registró un repuesto en movimientos de tipo 'SALIDA'
      * dentro de la tabla movimiento_inventario.
@@ -375,6 +381,7 @@ public class ReporteRepository {
     }
 
     /**
+     * REPORTE 13: Ingresos Mensuales (Estadístico)
      * Obtiene los ingresos totales agrupados por mes a partir de las facturas emitidas.
      * <p>
      * La consulta agrupa por año y mes usando {@code TO_CHAR(ot.fecha_ingreso, 'YYYY-MM')}
