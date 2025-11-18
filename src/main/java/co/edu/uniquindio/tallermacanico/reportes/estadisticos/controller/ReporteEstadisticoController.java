@@ -17,7 +17,7 @@ public class ReporteEstadisticoController {
 
     @GetMapping("/ingresos/pdf")
     public ResponseEntity<byte[]> descargarIngresosMensuales() {
-        byte[] pdf = reportePDFService.generarPDFIngresosMensuales(ingresoService.getIngresosPorMes());
+        byte[] pdf = reportePDFService.generarPDFIngresosMensuales();
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=ingresos.pdf")
                 .contentType(MediaType.APPLICATION_PDF)
@@ -26,7 +26,7 @@ public class ReporteEstadisticoController {
 
     @GetMapping("/servicios/pdf")
     public ResponseEntity<byte[]> descargarServiciosSolicitados() {
-        byte[] pdf = reportePDFService.generarPDFServiciosSolicitados(servicioService.getDistribucionServicios());
+        byte[] pdf = reportePDFService.generarPDFServiciosMasSolicitados();
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=servicios.pdf")
                 .contentType(MediaType.APPLICATION_PDF)
@@ -35,7 +35,7 @@ public class ReporteEstadisticoController {
 
     @GetMapping("/repuestos/pdf")
     public ResponseEntity<byte[]> descargarRepuestosUsados() {
-        byte[] pdf = reportePDFService.generarPDFRepuestosUsados(repuestoService.getDistribucionRepuestos());
+        byte[] pdf = reportePDFService.generarPDFRepuestosMasUsados();
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=repuestos.pdf")
                 .contentType(MediaType.APPLICATION_PDF)

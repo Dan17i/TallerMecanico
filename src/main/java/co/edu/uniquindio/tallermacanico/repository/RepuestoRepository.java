@@ -25,6 +25,10 @@ public class RepuestoRepository {
 
     /**
      * Lista todos los repuestos registrados en la base de datos.
+     * <p>
+     * Nota: Utiliza alias (AS) para mapear {@code id_repuesto}, {@code stock_actual}
+     * y {@code unidad_medida} a los campos camelCase del DTO/Model.
+     * </p>
      *
      * @return lista de objetos {@link Repuesto}
      */
@@ -32,23 +36,57 @@ public class RepuestoRepository {
         String sql = "SELECT id_repuesto AS idRepuesto, nombre, descripcion, stock_actual AS stockActual, unidad_medida AS unidadMedida FROM repuesto";
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Repuesto.class));
     }
+
+    /**
+     * Registra un nuevo repuesto en la base de datos y recupera el ID generado.
+     * (Método consolidado a partir de {@code crearRepuesto} y {@code registrarRepuesto}).
+     *
+     * @param repuesto objeto {@link Repuesto} con los datos a insertar
+     * @return ID generado del nuevo repuesto
+     */
     public int crearRepuesto(Repuesto repuesto) {
         String sql = "INSERT INTO repuesto (nombre, descripcion, stock_actual, unidad_medida) VALUES (?, ?, ?, ?)";
-        return jdbcTemplate.update(sql,
-                repuesto.getNombre(),
-                repuesto.getDescripcion(),
-                repuesto.getStockActual(),
-                repuesto.getUnidadMedida()
-        );
-    }
-    public Repuesto buscarPorId(int id) {
-        String sql = "SELECT * FROM repuesto WHERE id_repuesto = ?";
-        List<Repuesto> resultado = jdbcTemplate.query(sql,
-                new BeanPropertyRowMapper<>(Repuesto.class),
-                id);
-        return resultado.isEmpty() ? null : resultado.get(0);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            // Especificar la columna de la clave generada
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id_repuesto"});
+            ps.setString(1, repuesto.getNombre());
+            ps.setString(2, repuesto.getDescripcion());
+            ps.setDouble(3, repuesto.getStockActual());
+            ps.setString(4, repuesto.getUnidadMedida());
+            return ps;
+        }, keyHolder);
+
+        // Devolver la clave generada
+        return keyHolder.getKey().intValue();
     }
 
+    /**
+     * Busca un repuesto por su identificador único.
+     * (Método consolidado a partir de las dos versiones de {@code buscarPorId}).
+     *
+     * @param id identificador del repuesto
+     * @return objeto {@link Repuesto} si existe, o {@code null} si no se encuentra
+     */
+    public Repuesto buscarPorId(int id) {
+        // Usa alias para mapear correctamente
+        String sql = "SELECT id_repuesto AS idRepuesto, nombre, descripcion, stock_actual AS stockActual, unidad_medida AS unidadMedida FROM repuesto WHERE id_repuesto = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Repuesto.class), id);
+        } catch (org.springframework.dao.EmptyResultDataAccessException e) {
+            // Manejar correctamente el caso donde no se encuentra el objeto
+            return null;
+        }
+    }
+
+    /**
+     * Actualiza todos los campos de un repuesto existente, excepto el ID.
+     *
+     * @param id identificador del repuesto a actualizar
+     * @param repuesto objeto {@link Repuesto} con los nuevos datos
+     * @return número de filas afectadas (1 si fue exitoso, 0 si no se encontró el ID)
+     */
     public int actualizarRepuesto(int id, Repuesto repuesto) {
         String sql = "UPDATE repuesto SET nombre = ?, descripcion = ?, stock_actual = ?, unidad_medida = ? WHERE id_repuesto = ?";
         return jdbcTemplate.update(sql,
@@ -59,49 +97,8 @@ public class RepuestoRepository {
                 id);
     }
 
-    public int eliminarRepuesto(int id) {
-        String sql = "DELETE FROM repuesto WHERE id_repuesto = ?";
-        return jdbcTemplate.update(sql, id);
-
     /**
-     * Registra un nuevo repuesto en la base de datos.
-     *
-     * @param repuesto objeto {@link Repuesto} con los datos a insertar
-     * @return ID generado del nuevo repuesto
-     */
-    public int registrarRepuesto(Repuesto repuesto) {
-        String sql = "INSERT INTO repuesto (nombre, descripcion, stock_actual, unidad_medida) VALUES (?, ?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id_repuesto"});
-            ps.setString(1, repuesto.getNombre());
-            ps.setString(2, repuesto.getDescripcion());
-            ps.setDouble(3, repuesto.getStockActual());
-            ps.setString(4, repuesto.getUnidadMedida());
-            return ps;
-        }, keyHolder);
-
-        return keyHolder.getKey().intValue();
-    }
-
-    /**
-     * Busca un repuesto por su identificador único.
-     *
-     * @param id identificador del repuesto
-     * @return objeto {@link Repuesto} si existe, o {@code null} si no se encuentra
-     */
-    public Repuesto buscarPorId(int id) {
-        String sql = "SELECT id_repuesto AS idRepuesto, nombre, descripcion, stock_actual AS stockActual, unidad_medida AS unidadMedida FROM repuesto WHERE id_repuesto = ?";
-        try {
-            return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Repuesto.class), id);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    /**
-     * Actualiza el stock de un repuesto existente.
+     * Actualiza únicamente el stock de un repuesto existente.
      *
      * @param idRepuesto identificador del repuesto
      * @param nuevoStock nuevo valor de stock
@@ -113,12 +110,13 @@ public class RepuestoRepository {
 
     /**
      * Elimina un repuesto por su identificador.
+     * (Método consolidado a partir de las dos versiones de {@code eliminarRepuesto}).
      *
      * @param id identificador del repuesto
+     * @return número de filas afectadas (1 si fue exitoso, 0 si no se encontró el ID)
      */
-    public void eliminarRepuesto(int id) {
+    public int eliminarRepuesto(int id) {
         String sql = "DELETE FROM repuesto WHERE id_repuesto = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id);
     }
 }
-

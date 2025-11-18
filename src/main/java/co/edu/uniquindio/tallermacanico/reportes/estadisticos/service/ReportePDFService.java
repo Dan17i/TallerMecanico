@@ -856,7 +856,4 @@ public class ReportePDFService {
                 .setPadding(8)
                 .setBold();
     }
-
-
-
 }
