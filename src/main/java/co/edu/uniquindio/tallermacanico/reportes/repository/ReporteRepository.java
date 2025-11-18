@@ -27,7 +27,7 @@ public class ReporteRepository {
     }
 
     /**
-     * Reporte simple: listado de clientes registrados.
+     * Reporte simple: 1. Listado de clientes registrados.
      *
      * @return lista de clientes
      */
@@ -45,7 +45,7 @@ public class ReporteRepository {
 
 
     /**
-     * Reporte simple: listado de vehículos registrados con su cliente asociado.
+     * Reporte simple: 2. listado de vehículos registrados con su cliente asociado.
      * <p>
      * Incluye placa, marca, modelo y el nombre completo del propietario.
      * </p>
@@ -71,7 +71,7 @@ public class ReporteRepository {
     }
 
     /**
-     * Reporte simple: listado de servicios disponibles.
+     * Reporte simple: 3. Listado de servicios disponibles.
      * <p>
      * Incluye nombre, descripción y precio base de cada servicio.
      * </p>
@@ -92,9 +92,12 @@ public class ReporteRepository {
                 rs.getDouble("precio_base")
         ));
     }
+    // =====================================================
+    // REPORTES INTERMEDIOS
+    // =====================================================
 
     /**
-     * Reporte intermedio: órdenes de trabajo por rango de fechas.
+     * Reporte intermedio: 4. órdenes de trabajo por rango de fechas.
      * <p>
      * Incluye identificador, vehículo, fechas de ingreso y salida,
      * diagnóstico inicial y estado de la orden.
@@ -130,7 +133,7 @@ public class ReporteRepository {
 
 
     /**
-     * Reporte intermedio: facturas emitidas por un cliente específico.
+     * Reporte intermedio: 5. Facturas emitidas por un cliente específico.
      * <p>
      * Se obtiene la información de la factura y el nombre del cliente
      * a través de la relación factura → orden_trabajo → vehiculo → cliente.
@@ -162,7 +165,7 @@ public class ReporteRepository {
     }
 
     /**
-     * Reporte intermedio: movimientos de inventario por repuesto.
+     * Reporte intermedio: 6. Movimientos de inventario por repuesto.
      * <p>
      * Incluye identificador del movimiento, tipo, cantidad, fecha del movimiento
      * y el nombre del repuesto asociado.

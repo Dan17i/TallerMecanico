@@ -47,6 +47,7 @@ public class ReportePDFController {
     // =====================================================
 
     /**
+     * 1. Listado de Clientes Registrados
      * Genera y descarga un reporte PDF con el listado completo de clientes registrados.
      * <p>
      * El reporte incluye: ID, nombre completo, teléfono y correo electrónico de cada cliente.
@@ -75,6 +76,7 @@ public class ReportePDFController {
     }
 
     /**
+     * 2. Listado de Vehículos con Propietario
      * Genera y descarga un reporte PDF con el listado de vehículos registrados.
      * <p>
      * El reporte incluye: placa, marca, modelo y nombre del propietario de cada vehículo.
@@ -103,6 +105,7 @@ public class ReportePDFController {
     }
 
     /**
+     * 3: Listado de Servicios Disponibles
      * Genera y descarga un reporte PDF con el catálogo de servicios disponibles.
      * <p>
      * El reporte incluye: nombre del servicio, descripción y precio base.
@@ -131,10 +134,11 @@ public class ReportePDFController {
     }
 
     // =====================================================
-    // REPORTES INTERMEDIOS
+    // REPORTES INTERMEDIOS (4)
     // =====================================================
 
     /**
+     * REPORTE 4: Órdenes de Trabajo por Rango de Fechas
      * Genera y descarga un reporte PDF de órdenes de trabajo filtradas por rango de fechas.
      * <p>
      * El reporte incluye estadísticas del período (completadas, en proceso, pendientes)
@@ -169,6 +173,7 @@ public class ReportePDFController {
     }
 
     /**
+     * REPORTE 5: Facturas por Cliente
      * Genera y descarga un reporte PDF de facturas emitidas para un cliente específico.
      * <p>
      * El reporte incluye: número de factura, fecha de emisión y monto total de cada factura,
@@ -201,104 +206,76 @@ public class ReportePDFController {
     }
 
     /**
-     * Genera y descarga un reporte PDF de movimientos de inventario para un repuesto específico.
-     * <p>
-     * El reporte incluye: ID del movimiento, tipo (entrada/salida/ajuste), cantidad,
-     * fecha del movimiento y nombre del repuesto.
-     * </p>
-     *
-     * @param idRepuesto identificador único del repuesto
-     * @return ResponseEntity con el archivo PDF como arreglo de bytes
-     * @throws RuntimeException si ocurre un error al generar el PDF
-     *
-     * <p><b>Ejemplo de uso:</b></p>
-     * <pre>
-     * GET /api/reportes/pdf/inventario-repuesto/12
-     * </pre>
-     *
-     * <p><b>Respuesta:</b> Archivo PDF descargable "Inventario_Repuesto_12.pdf"</p>
+     * Endpoint para generar el PDF de Movimientos de Inventario por Repuesto.
+     * Mapeado a: GET /api/reportes/inventario-repuesto/{idRepuesto}
      */
     @GetMapping("/inventario-repuesto/{idRepuesto}")
-    public ResponseEntity<byte[]> descargarReporteInventarioRepuesto(
+    public ResponseEntity<byte[]> descargarReporteMovimientosRepuesto(
             @PathVariable int idRepuesto) {
 
-        //byte[] pdfBytes = reportePDFService.generarPDFMovimientosInventario(idRepuesto);
+        // Llama al método del servicio para generar el PDF
+        byte[] pdfBytes = reportePDFService.generarPDFMovimientosRepuesto(idRepuesto);
+
+        // Configura los encabezados HTTP
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+
+        // Define el nombre del archivo para la descarga
+        headers.setContentDispositionFormData("attachment", "Movimientos_Repuesto_" + idRepuesto + ".pdf");
+        // Se mantiene la configuración de caché del ejemplo
+        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+        // Devuelve la respuesta
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+    }
+    /**
+     * Genera un reporte en PDF con las supervisiones realizadas por un supervisor.
+     * <p>
+     * El archivo se retorna como arreglo de bytes en la respuesta HTTP,
+     * configurado con tipo de contenido {@code application/pdf} y encabezado
+     * para descarga con nombre sugerido.
+     * </p>
+     *
+     * @param idSupervisor ID del supervisor a consultar
+     * @return PDF en un {@link ResponseEntity} listo para descarga
+     */
+    @GetMapping("/supervisiones/{idSupervisor}")
+    public ResponseEntity<byte[]> generarReporteSupervisiones(@PathVariable int idSupervisor) {
+        byte[] pdfBytes = reportePDFService.generarPDFSupervisiones(idSupervisor);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "Inventario_Repuesto_" + idRepuesto + ".pdf");
-        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-          return null;
-        //return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+        headers.setContentDispositionFormData("attachment", "supervisiones_" + idSupervisor + ".pdf");
+
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
+
     // =====================================================
     // REPORTES COMPLEJOS
     // =====================================================
 
 
     /**
-     * Genera y descarga un reporte PDF de repuestos utilizados en una orden de servicio.
+     * Genera un reporte en PDF con los servicios realizados por un mecánico.
      * <p>
-     * El reporte incluye: ID de orden de servicio, nombre del repuesto,
-     * cantidad utilizada, tipo de movimiento y fecha.
+     * El archivo se retorna como arreglo de bytes en la respuesta HTTP,
+     * configurado con tipo de contenido {@code application/pdf} y encabezado
+     * para descarga con nombre sugerido.
      * </p>
      *
-     * @param idOrdenServicio identificador único de la orden de servicio
-     * @return ResponseEntity con el archivo PDF como arreglo de bytes
-     * @throws RuntimeException si ocurre un error al generar el PDF
-     *
-     * <p><b>Ejemplo de uso:</b></p>
-     * <pre>
-     * GET /api/reportes/pdf/repuestos-orden/45
-     * </pre>
-     *
-     * <p><b>Respuesta:</b> Archivo PDF descargable "Repuestos_Orden_45.pdf"</p>
+     * @param idMecanico ID del mecánico a consultar
+     * @return PDF en un {@link ResponseEntity} listo para descarga
      */
-    @GetMapping("/repuestos-orden/{idOrdenServicio}")
-    public ResponseEntity<byte[]> descargarReporteRepuestosOrden(
-            @PathVariable int idOrdenServicio) {
-
-        //byte[] pdfBytes = reportePDFService.generarPDFRepuestosPorOrdenServicio(idOrdenServicio);
+    @GetMapping("/servicios/{idMecanico}")
+    public ResponseEntity<byte[]> generarReporteServiciosMecanico(@PathVariable int idMecanico) {
+        byte[] pdfBytes = reportePDFService.generarPDFServiciosMecanico(idMecanico);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "Repuestos_Orden_" + idOrdenServicio + ".pdf");
-        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-        return null;
-        //return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
-    }
-
-
-    /**
-     * Genera y descarga un reporte PDF de productividad de mecánicos supervisores.
-     * <p>
-     * El reporte incluye un resumen del total de supervisores y una tabla detallada
-     * con: nombre del supervisor, total de supervisiones realizadas y total de servicios ejecutados.
-     * Además, incluye totales consolidados globales.
-     * </p>
-     *
-     * @return ResponseEntity con el archivo PDF como arreglo de bytes
-     * @throws RuntimeException si ocurre un error al generar el PDF
-     *
-     * <p><b>Ejemplo de uso:</b></p>
-     * <pre>
-     * GET /api/reportes/pdf/productividad-supervisores
-     * </pre>
-     *
-     * <p><b>Respuesta:</b> Archivo PDF descargable "Productividad_Supervisores.pdf"</p>
-     */
-    @GetMapping("/productividad-supervisores")
-    public ResponseEntity<byte[]> descargarReporteProductividadSupervisores() {
-        byte[] pdfBytes = reportePDFService.generarPDFProductividadSupervisores();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "Productividad_Supervisores.pdf");
-        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+        headers.setContentDispositionFormData("attachment", "servicios_mecanico_" + idMecanico + ".pdf");
 
         return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
-
     // =====================================================
     // REPORTES ESTADÍSTICOS
     // =====================================================

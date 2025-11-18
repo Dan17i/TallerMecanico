@@ -47,7 +47,7 @@ public class ReportePDFService {
     // ==================== REPORTES SIMPLES (3) ====================
 
     /**
-     * REPORTE 1: Listado de Clientes Registrados
+     * REPORTE 1: 1. Listado de Clientes Registrados
      */
     public byte[] generarPDFClientes() {
         List<Cliente> clientes = reporteRepository.listarClientes();
@@ -190,7 +190,9 @@ public class ReportePDFService {
         return baos.toByteArray();
     }
 
-    // ==================== REPORTES INTERMEDIOS (4) ====================
+    // =====================================================
+    // REPORTES INTERMEDIOS (4)
+    // =====================================================
 
     /**
      * REPORTE 4: Órdenes de Trabajo por Rango de Fechas
@@ -335,7 +337,86 @@ public class ReportePDFService {
 
         return baos.toByteArray();
     }
+    /**
+     * REPORTE 6: Historial de Movimientos de Inventario por Repuesto
+     */
+    public byte[] generarPDFMovimientosRepuesto(int idRepuesto) {
+        List<InventarioReporteDTO> movimientos = reporteRepository.listarMovimientosPorRepuesto(idRepuesto);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
+        try {
+            PdfWriter writer = new PdfWriter(baos);
+            PdfDocument pdf = new PdfDocument(writer);
+            Document document = new Document(pdf);
+
+            PdfFont font = PdfFontFactory.createFont(StandardFonts.HELVETICA);
+            PdfFont boldFont = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
+
+            agregarHeader(document, "HISTORIAL DE MOVIMIENTOS POR REPUESTO", boldFont);
+
+            // Info del Repuesto
+            String nombreRepuesto = movimientos.isEmpty() ? "Repuesto Desconocido" :
+                    movimientos.get(0).getNombreRepuesto();
+
+            Table infoRepuesto = new Table(1);
+            infoRepuesto.setWidth(UnitValue.createPercentValue(100));
+            infoRepuesto.addCell(createHeaderCellSingle("INFORMACIÓN DEL REPUESTO", boldFont));
+            infoRepuesto.addCell(createCell("Nombre: " + nombreRepuesto, font));
+            infoRepuesto.addCell(createCell("ID Repuesto: R-" + String.format("%04d", idRepuesto), font));
+
+            document.add(infoRepuesto);
+            document.add(new Paragraph("\n"));
+
+            // Tabla de Movimientos
+            Table table = new Table(new float[]{2, 3, 3, 3, 3});
+            table.setWidth(UnitValue.createPercentValue(100));
+
+            agregarHeaderCell(table, "MOVIMIENTO ID", boldFont);
+            agregarHeaderCell(table, "TIPO", boldFont);
+            agregarHeaderCell(table, "CANTIDAD", boldFont);
+            agregarHeaderCell(table, "FECHA", boldFont); // Corregido: La columna se llena con 'fecha'
+            agregarHeaderCell(table, "REPUESTO", boldFont);
+
+            int totalEntradas = 0;
+            int totalSalidas = 0;
+
+            for (InventarioReporteDTO mov : movimientos) {
+                table.addCell(createCell("M-" + String.format("%05d", mov.getIdMovimiento()), font));
+                table.addCell(createCell(mov.getTipoMovimiento(), font));
+                table.addCell(createCell(String.valueOf(mov.getCantidad()), font));
+                // ¡ESTA ES LA LÍNEA CORREGIDA!
+                table.addCell(createCell(mov.getFecha().toString(), font));
+                // Fin de la línea corregida
+                table.addCell(createCell(mov.getNombreRepuesto(), font));
+
+                if ("ENTRADA".equals(mov.getTipoMovimiento())) {
+                    totalEntradas += mov.getCantidad();
+                } else if ("SALIDA".equals(mov.getTipoMovimiento())) {
+                    totalSalidas += mov.getCantidad();
+                }
+            }
+
+            document.add(table);
+
+            // Resumen de Inventario
+            document.add(new Paragraph("\n"));
+            Table resumen = new Table(1);
+            resumen.setWidth(UnitValue.createPercentValue(100));
+            resumen.addCell(createHeaderCellSingle("RESUMEN DE MOVIMIENTOS", boldFont));
+            resumen.addCell(createCell("Total de Movimientos: " + movimientos.size(), font));
+            resumen.addCell(createCell("Total Cantidad (Entradas): " + totalEntradas, font));
+            resumen.addCell(createCell("Total Cantidad (Salidas): " + totalSalidas, font));
+
+            document.add(resumen);
+            agregarFooter(document, font);
+            document.close();
+
+        } catch (IOException e) {
+            throw new RuntimeException("Error al generar PDF de movimientos de inventario", e);
+        }
+
+        return baos.toByteArray();
+    }
     /**
      * REPORTE 7: Supervisiones por Mecánico
      */
